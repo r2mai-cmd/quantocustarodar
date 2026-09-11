@@ -1,32 +1,11 @@
-# Quanto Custa Rodar? — V6
+# Quanto Custa Rodar? — V8
 
-Versão mobile/desktop da comparação de carros.
+Versão limpa para GitHub Pages. O `index.html` fica na raiz do projeto.
 
-## Correções desta versão
-- Fotos reais conhecidas para BYD Dolphin Mini e Fiat Pulse via Wikimedia Commons.
-- Cards do cabeçalho usam a mesma malha de colunas da tabela.
-- No celular, a coluna "Dados" fica alinhada com a primeira coluna da tabela; os carros ficam alinhados horizontalmente com os respectivos dados.
-- Fotos dos carros foram reduzidas no mobile.
-- Botão **+ Adicionar carro** abre diretamente o seletor de veículos.
-- O botão **+** do card vazio também abre o seletor.
-- Cache-busting `?v=6` em CSS/JS para evitar que o navegador continue usando a versão anterior.
-- Até 4 veículos; o 3º e 4º card podem ser removidos pelo X.
+## Fotos dos carros
 
-## Fontes de imagens
-As imagens conhecidas são do Wikimedia Commons e mantêm o link de atribuição na ficha técnica. A foto do BYD Dolphin Mini é licenciada em CC BY 4.0; a foto do Fiat Pulse usada nesta versão vem de uma página do Commons correspondente ao modelo.
+Os cards procuram fotos reais de veículos no Wikimedia Commons. Para modelos conhecidos há arquivos previamente definidos; para os demais, o site consulta a API pública do Wikimedia Commons e escolhe um resultado relacionado à marca/modelo. As imagens são tratadas como ilustrativas porque a foto disponível pode não corresponder exatamente ao ano/versão do PBEV.
 
+Quando a foto tem licença que exige atribuição, a ficha técnica exibe a origem/crédito.
 
-## V6
-- Fotos Wikimedia via Special:FilePath.
-- Fiat Pulse com foto conhecida.
-- Coluna inicial alinhada à coluna Dados da tabela.
-- Fotos menores no mobile.
-- + Adicionar carro com listener direto e seletor.
-
-
-## V7
-- terceiro e quarto carro com botão X visível;
-- botão + abre o seletor por clique/toque;
-- alinhamento das colunas do cabeçalho com a tabela;
-- dados técnicos adicionais (propulsão, combustível, motor e câmbio);
-- foto do Fiat Pulse corrigida para arquivo existente no Wikimedia Commons.
+Fonte técnica dos dados de consumo/autonomia: Inmetro PBEV 2026.
