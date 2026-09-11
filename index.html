@@ -1,14 +1,13 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="description" content="Quanto Custa Rodar? Compare carros pelo custo real de uso, com dados do Inmetro e cálculos personalizados.">
-  <meta name="theme-color" content="#ffffff">
-  <link rel="canonical" href="https://quantocustarodar.com.br/">
-  <title>Quanto Custa Rodar? — Compare carros pelo custo real</title>
-  <link rel="icon" href="logo.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Quanto Custa Rodar? Compare carros pelo custo real de uso, com dados do Inmetro e cálculos personalizados.">
+<link rel="canonical" href="https://quantocustarodar.com.br/">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<title>Quanto Custa Rodar? — Compare carros pelo custo real</title>
+<link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
 <header class="site-header">
@@ -16,21 +15,19 @@
     <img src="logo.svg" alt="">
     <span class="brand-copy"><strong>Quanto Custa Rodar?</strong><small>COMPARE. CALCULE. DECIDA MELHOR.</small></span>
   </a>
-  <nav class="main-nav" aria-label="Navegação principal">
-    <a class="active" href="#comparar">Comparar</a><a href="#fontes">Fontes</a><a href="#sobre">Sobre</a>
-  </nav>
+  <nav class="main-nav"><a class="active" href="#comparar">Comparar</a><a href="#fontes">Fontes</a><a href="#sobre">Sobre</a></nav>
   <a class="search-button" href="#comparar" aria-label="Buscar carros">⌕</a>
 </header>
 
 <main id="top">
 <section class="profile-bar" aria-label="Seus parâmetros de custo">
   <div class="profile-title"><span class="gear">⚙</span><div><b>Seus parâmetros de custo</b><small>Use seus valores para personalizar a comparação.</small></div></div>
-  <label>Gasolina<input id="gasPrice" type="text" value="6,19" inputmode="decimal" autocomplete="off"><small>R$/litro</small></label>
-  <label>Etanol<input id="ethPrice" type="text" value="4,09" inputmode="decimal" autocomplete="off"><small>R$/litro</small></label>
-  <label>Energia<input id="kwhPrice" type="text" value="0,89" inputmode="decimal" autocomplete="off"><small>R$/kWh</small></label>
+  <label>Gasolina<input id="gasPrice" class="money-input" inputmode="numeric" autocomplete="off" value="6,19"><small>R$/litro</small></label>
+  <label>Etanol<input id="ethPrice" class="money-input" inputmode="numeric" autocomplete="off" value="4,09"><small>R$/litro</small></label>
+  <label>Energia<input id="kwhPrice" class="money-input" inputmode="numeric" autocomplete="off" value="0,89"><small>R$/kWh</small></label>
   <label class="solar-label"><input id="solar" type="checkbox"><span>Tenho energia solar</span><small id="solarHint">considera R$ 0,00/kWh</small></label>
-  <label>Estado<select id="state"><option value="RS">RS</option><option value="SP">SP</option><option value="PR">PR</option><option value="SC">SC</option><option value="MG">MG</option><option value="RJ">RJ</option></select><small>IPVA</small></label>
-  <label>Km por mês<input id="kmMonth" type="number" value="1500" min="1" step="50"><small>km</small></label>
+  <label>Estado<select id="state"><option value="">Selecionar</option><option value="RS">RS</option><option value="SP">SP</option><option value="PR">PR</option><option value="SC">SC</option><option value="MG">MG</option><option value="RJ">RJ</option></select><small>IPVA</small></label>
+  <label>Km por mês<input id="kmMonth" type="number" inputmode="numeric" min="1" step="50" placeholder="Selecionar"><small>km</small></label>
   <button class="green-button" id="recalculate" type="button">↻ Atualizar cálculos</button>
 </section>
 
@@ -38,26 +35,25 @@
   <div class="section-head"><div><p class="eyebrow">QUANTO CUSTA RODAR?</p><h1>Comparação de carros</h1><p>Escolha dois carros e veja qual faz mais sentido para o seu perfil.</p></div><div class="data-status" id="dataStatus">Carregando PBEV 2026…</div></div>
 
   <div class="compare-grid" id="compareGrid">
-    <div class="label-column intro-column"><div class="intro-icon">⇄</div><b>Compare os custos de uso</b><span>Selecione os dois carros que você quer comparar.</span></div>
+    <div class="intro-column"><div class="intro-icon">⇄</div><b>Compare os custos de uso</b><span>Escolha os carros que você quer pesquisar.</span></div>
     <div id="carColumns" class="car-columns"></div>
-    </div><div class="add-row"><button class="add-column" id="addCar" type="button"><span>+</span><b>Adicionar carro</b><small>até 4 veículos</small></button></div>
   </div>
+  <button class="add-car-row" id="addCar" data-add-car type="button"><span>+</span><b>Adicionar carro</b><small>até 4 veículos</small></button>
 
   <div class="comparison-table" id="comparisonTable"></div>
   <div class="table-actions"><button class="secondary-button" id="showAllSpecs" type="button">Ver todas as especificações →</button></div>
 </section>
 
 <section class="verdict" id="resultado">
-  <div class="verdict-head"><div><p class="eyebrow">RESULTADO DA COMPARAÇÃO</p><h2>Qual vale mais para você?</h2><p>O resultado considera os dados disponíveis e os parâmetros que você informou.</p></div><span class="verdict-tag">CÁLCULO PERSONALIZADO</span></div>
+  <div class="verdict-head"><div><p class="eyebrow">RESULTADO DA COMPARAÇÃO</p><h2>Qual vale mais para você?</h2><p>O resultado considera os dados disponíveis e os parâmetros informados.</p></div><span class="verdict-tag">CÁLCULO PERSONALIZADO</span></div>
   <div id="verdictContent" class="verdict-content"><div class="empty-verdict">Escolha os dois carros acima para ver o resultado.</div></div>
 </section>
 
-<section class="sources" id="fontes"><div><p class="eyebrow">TRANSPARÊNCIA</p><h2>De onde vêm os números?</h2><p>Consumo e autonomia vêm do PBE Veicular. Preços, IPVA e manutenção só aparecem como dados quando houver uma fonte correspondente.</p></div><div class="source-cards">
+<section class="sources" id="fontes"><div><p class="eyebrow">TRANSPARÊNCIA</p><h2>De onde vêm os números?</h2><p>Consumo e autonomia vêm do PBE Veicular. Outros valores só entram quando houver fonte correspondente.</p></div><div class="source-cards">
   <article><b>INMETRO / PBEV</b><span>Consumo, eficiência e autonomia elétrica.</span><a href="https://www.gov.br/inmetro/pt-br/assuntos/regulamentacao/avaliacao-da-conformidade/programa-brasileiro-de-etiquetagem/tabelas-de-eficiencia-energetica/veiculos-automotivos-pbe-veicular" target="_blank" rel="noopener">Abrir fonte oficial →</a></article>
-  <article><b>FIPE</b><span>Preço médio de referência, quando consultado.</span><a href="https://www.fipe.org.br/pt-br/indices/veiculos" target="_blank" rel="noopener">Abrir fonte oficial →</a></article>
+  <article><b>FIPE</b><span>Preço médio de referência, quando integrado.</span><a href="https://www.fipe.org.br/pt-br/indices/veiculos" target="_blank" rel="noopener">Abrir fonte oficial →</a></article>
   <article><b>IPVA / SEFAZ</b><span>Alíquotas e isenções dependem do estado e do exercício.</span><a href="https://www.ipva.rs.gov.br/" target="_blank" rel="noopener">Consultar portal estadual →</a></article>
 </div></section>
-
 <section class="about" id="sobre"><div><p class="eyebrow">SOBRE O PROJETO</p><h2>Mais informação. Melhores escolhas.</h2></div><p>O Quanto Custa Rodar? transforma dados técnicos e parâmetros do motorista em uma comparação financeira simples.</p></section>
 </main>
 
@@ -72,6 +68,6 @@
 <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
 <aside class="drawer" id="specDrawer" aria-hidden="true"><button class="drawer-close" id="drawerClose" type="button" aria-label="Fechar">×</button><div id="drawerContent"></div></aside>
 <footer><div class="footer-brand"><img src="logo.svg" alt=""><b>Quanto Custa Rodar?</b></div><p>quantocustarodar.com.br · Dados e cálculos informativos.</p></footer>
-<script src="app.js"></script>
+<script src="app.js?v=6"></script>
 </body>
 </html>

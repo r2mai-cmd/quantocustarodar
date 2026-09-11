@@ -1,20 +1,32 @@
-# Quanto Custa Rodar?
+# Quanto Custa Rodar? — V6
 
-Site estático para comparar o custo de uso de carros.
+Versão mobile/desktop da comparação de carros.
 
-## Esta versão
-- Começa com exatamente 2 espaços de comparação vazios.
-- O usuário escolhe cada carro por uma busca amigável para celular.
-- Permite adicionar até 4 carros.
-- No celular, os dois carros iniciais cabem lado a lado sem exigir rolagem horizontal para descobri-los.
-- A tabela usa as colunas dos dois carros e não inicia com veículos pré-selecionados.
-- Ficha técnica abre em painel lateral; no celular ocupa a tela inteira.
-- Consumo/autonomia são carregados do PBEV 2026.
+## Correções desta versão
+- Fotos reais conhecidas para BYD Dolphin Mini e Fiat Pulse via Wikimedia Commons.
+- Cards do cabeçalho usam a mesma malha de colunas da tabela.
+- No celular, a coluna "Dados" fica alinhada com a primeira coluna da tabela; os carros ficam alinhados horizontalmente com os respectivos dados.
+- Fotos dos carros foram reduzidas no mobile.
+- Botão **+ Adicionar carro** abre diretamente o seletor de veículos.
+- O botão **+** do card vazio também abre o seletor.
+- Cache-busting `?v=6` em CSS/JS para evitar que o navegador continue usando a versão anterior.
+- Até 4 veículos; o 3º e 4º card podem ser removidos pelo X.
 
-## Fonte PBEV
-A interface carrega a base pública usada no protótipo e identifica os dados como INMETRO/PBEV 2026. A página oficial do Inmetro informa que a tabela de veículos leves 2026 é o 18º ciclo e foi atualizada em 31/08/2026.
+## Fontes de imagens
+As imagens conhecidas são do Wikimedia Commons e mantêm o link de atribuição na ficha técnica. A foto do BYD Dolphin Mini é licenciada em CC BY 4.0; a foto do Fiat Pulse usada nesta versão vem de uma página do Commons correspondente ao modelo.
 
-Fonte oficial: https://www.gov.br/inmetro/pt-br/assuntos/regulamentacao/avaliacao-da-conformidade/programa-brasileiro-de-etiquetagem/tabelas-de-eficiencia-energetica/veiculos-automotivos-pbe-veicular
 
-## Publicação
-Para GitHub Pages, mantenha `index.html`, `styles.css`, `app.js`, `logo.svg`, `hero-car.svg` e `.nojekyll` na raiz da fonte publicada.
+## V6
+- Fotos Wikimedia via Special:FilePath.
+- Fiat Pulse com foto conhecida.
+- Coluna inicial alinhada à coluna Dados da tabela.
+- Fotos menores no mobile.
+- + Adicionar carro com listener direto e seletor.
+
+
+## V7
+- terceiro e quarto carro com botão X visível;
+- botão + abre o seletor por clique/toque;
+- alinhamento das colunas do cabeçalho com a tabela;
+- dados técnicos adicionais (propulsão, combustível, motor e câmbio);
+- foto do Fiat Pulse corrigida para arquivo existente no Wikimedia Commons.
