@@ -3,11 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Quanto Custa Rodar? Compare carros pelo custo real de uso, com dados do Inmetro e cálculos personalizados.">
+<meta name="description" content="Compare carros pelo custo real de rodar: consumo, autonomia e custo de energia ou combustível com dados do PBEV/Inmetro e cálculos personalizados.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="theme-color" content="#10243d">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Quanto Custa Rodar? — Compare carros pelo custo real">
+<meta property="og:description" content="Compare carros elétricos, híbridos e a combustão pelo custo de uso.">
+<meta property="og:url" content="https://quantocustarodar.com.br/">
+<meta property="og:image" content="https://quantocustarodar.com.br/logo.svg">
+<meta name="twitter:card" content="summary">
 <link rel="canonical" href="https://quantocustarodar.com.br/">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <title>Quanto Custa Rodar? — Compare carros pelo custo real</title>
-<link rel="stylesheet" href="styles.css?v=12">
+<link rel="stylesheet" href="styles.css?v=13">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Quanto Custa Rodar?","url":"https://quantocustarodar.com.br/","description":"Comparador de custo de uso de carros elétricos, híbridos e a combustão.","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"pt-BR"}</script>
 </head>
 <body>
 <header class="site-header">
@@ -52,6 +61,7 @@
   <button class="add-car-row" id="addCar" data-add-car type="button"><span>+</span><b>Adicionar carro</b><small>até 4 veículos</small></button>
 
   <div class="comparison-table" id="comparisonTable"></div>
+  <p class="data-scope-note"><b>Como tratamos dados incompletos:</b> a tabela mostra somente valores que conseguimos calcular com fonte ou parâmetro disponível. IPVA, manutenção, preço de referência e custo total de propriedade não aparecem como números quando ainda não há integração confiável e comparável para os veículos.</p>
   <div class="table-actions"><button class="secondary-button" id="showAllSpecs" type="button">Ver todas as especificações →</button></div>
 </section>
 
@@ -65,7 +75,7 @@
   <article><b>FIPE</b><span>Preço médio de referência, quando integrado.</span><a href="https://www.fipe.org.br/pt-br/indices/veiculos" target="_blank" rel="noopener">Abrir fonte oficial →</a></article>
   <article><b>IPVA / SEFAZ</b><span>Alíquotas e isenções dependem do estado e do exercício.</span><a href="https://www.ipva.rs.gov.br/" target="_blank" rel="noopener">Consultar portal estadual →</a></article>
 </div></section>
-<section class="about" id="sobre"><div><p class="eyebrow">SOBRE O PROJETO</p><h2>Mais informação. Melhores escolhas.</h2></div><p>O Quanto Custa Rodar? transforma dados técnicos e parâmetros do motorista em uma comparação financeira simples.</p></section>
+<section class="about" id="sobre"><div><p class="eyebrow">SOBRE O PROJETO</p><h2>Mais informação. Melhores escolhas.</h2></div><p>O Quanto Custa Rodar? transforma dados técnicos e parâmetros do motorista em uma comparação financeira simples. Os resultados são informativos e podem variar conforme preços, uso e regras vigentes.</p></section>
 </main>
 
 <div class="picker-backdrop" id="pickerBackdrop" hidden></div>
@@ -78,7 +88,8 @@
 
 <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
 <aside class="drawer" id="specDrawer" aria-hidden="true"><button class="drawer-close" id="drawerClose" type="button" aria-label="Fechar">×</button><div id="drawerContent"></div></aside>
-<footer><div class="footer-brand"><img src="logo.svg" alt=""><b>Quanto Custa Rodar?</b></div><p>quantocustarodar.com.br · Dados e cálculos informativos.</p></footer>
-<script src="app.js?v=12"></script>
+<footer><div class="footer-brand"><img src="logo.svg" alt=""><b>Quanto Custa Rodar?</b></div><p>quantocustarodar.com.br · <a href="privacidade.html">Privacidade</a> · <a href="cookies.html">Cookies</a> · <a href="termos.html">Termos de uso</a></p></footer>
+<div class="privacy-banner" id="privacyBanner" hidden><div><b>Privacidade e cookies</b><span>Usamos armazenamento local para recursos técnicos. Cookies opcionais de análise e publicidade só serão ativados quando configurados e informados.</span></div><div class="privacy-actions"><a href="privacidade.html">Privacidade</a><a href="cookies.html">Cookies</a><button id="privacyOk" type="button">Entendi</button></div></div>
+<script src="app.js?v=13"></script>
 </body>
 </html>

@@ -34,7 +34,7 @@ function photoMarkup(v, cls='car-photo'){
   if(!v?.imageUrl)return `<div class="${cls}">${fallback}</div>`;
   return `<div class="${cls}"><img src="${esc(v.imageUrl)}" alt="${esc(carName(v))}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.replaceWith(Object.assign(document.createElement('div'),{className:'car-placeholder',textContent:'🚗'}));"><span class="photo-badge">Foto ilustrativa</span></div>`;
 }
-function slotCard(i){const id=slots[i],v=id?VEHICLES.find(x=>x.id===id):null;const removable=i>=2;return `<article class="car-card ${v?'filled':'empty'}" data-slot="${i}">${removable?`<button type="button" class="remove" data-remove="${i}" aria-label="Remover carro" title="Fechar este carro">×</button>`:''}${v?`${photoMarkup(v)}<h3>${esc(carName(v))}</h3><div class="version">${esc(v.version||'Versão PBEV 2026')}</div><div class="price-note">Preço de referência: ainda não integrado</div><button class="spec-link" data-spec="${v.id}">Ficha técnica →</button>`:`<div class="car-photo"><button class="select-plus" data-select="${i}" aria-label="Selecionar carro">+</button></div><h3>Selecionar carro</h3><p class="empty-copy">Escolha marca, modelo e versão.</p><button class="select-button" data-select="${i}">Selecionar</button>`}</article>`;}
+function slotCard(i){const id=slots[i],v=id?VEHICLES.find(x=>x.id===id):null;const removable=i>=2;return `<article class="car-card ${v?'filled':'empty'}" data-slot="${i}">${removable?`<button type="button" class="remove" data-remove="${i}" aria-label="Remover carro" title="Fechar este carro">×</button>`:''}${v?`${photoMarkup(v)}<h3>${esc(carName(v))}</h3><div class="version">${esc(v.version||'Versão PBEV 2026')}</div><button class="spec-link" data-spec="${v.id}">Ficha técnica →</button>`:`<div class="car-photo"><button class="select-plus" data-select="${i}" aria-label="Selecionar carro">+</button></div><h3>Selecionar carro</h3><p class="empty-copy">Escolha marca, modelo e versão.</p><button class="select-button" data-select="${i}">Selecionar</button>`}</article>`;}
 function renderCars(){const host=$('#carColumns');host.innerHTML=slots.map((_,i)=>slotCard(i)).join('');$('#compareGrid').style.setProperty('--car-count',slots.length);$('#compareGrid').style.setProperty('--car-min',slots.length>2?'210px':'0px');const add=$('#addCar');add.disabled=slots.length>=4;add.style.display=slots.length>=4?'none':'flex';}
 function searchVehicles(q){const s=q.trim().toLowerCase();if(!s)return VEHICLES.slice(0,18);return VEHICLES.filter(v=>`${v.brand} ${v.model} ${v.version}`.toLowerCase().includes(s)).slice(0,40);}
 function pickerThumb(v){return v.imageUrl?`<img src="${esc(v.imageUrl)}" alt="" loading="lazy">`:'<span class="picker-car">🚗</span>';}
@@ -82,19 +82,9 @@ function table(){
       ['Autonomia (PBEV)',x=>Number.isFinite(x.v.autonomy)?`${x.v.autonomy.toLocaleString('pt-BR')} km`:'—'],
       ['Custo por km',x=>Number.isFinite(x.r.costKm)?money2(x.r.costKm):'—']
     ]},
-    {group:'Impostos',items:[
-      ['IPVA anual',x=>x.r.ip.annual===0?'R$ 0':x.r.ip.label],
-      ['Base do cálculo',x=>x.r.ip.source]
-    ]},
-    {group:'Manutenção',items:[
-      ['Revisões','Ainda não integrada'],
-      ['Fonte','A definir por fabricante/versão']
-    ]},
     {group:'Custo estimado',items:[
       ['Energia/combustível por mês',x=>Number.isFinite(x.r.e.costKm)?money(x.r.e.costKm*p.km):'—'],
-      ['Energia/combustível por ano',x=>Number.isFinite(x.r.energyAnnual)?money(x.r.energyAnnual):'—'],
-      ['Custo total anual',x=>Number.isFinite(x.r.annual)?money(x.r.annual):'Parcial'],
-      ['Custo em 5 anos',x=>Number.isFinite(x.r.annual)?money(x.r.annual*5):'Parcial']
+      ['Energia/combustível por ano',x=>Number.isFinite(x.r.energyAnnual)?money(x.r.energyAnnual):'—']
     ]}
   ];
   let html=`<div class="table-scroll"><div class="table-head-row" ${grid}><div>Dados</div>${results.map(x=>`<div>${x?esc(carName(x.v)):'Selecionar carro'}</div>`).join('')}</div>`;
@@ -153,3 +143,13 @@ $('#drawerClose').addEventListener('click',closeDrawer);$('#drawerBackdrop').add
 
 async function load(){try{const r=await fetch(PBEV_CSV_URL,{cache:'no-store'});if(!r.ok)throw new Error('PBEV indisponível');VEHICLES=mapPBEV(await r.text());if(VEHICLES.length<100)throw new Error('base incompleta');$('#dataStatus').textContent=`${VEHICLES.length} registros carregados · PBEV 2026`;$('#dataStatus').classList.add('ok');renderAll();}catch(e){$('#dataStatus').textContent='Base PBEV indisponível no momento.';renderAll();}}
 initMoneyInputs();load();
+
+// Aviso de privacidade: nenhum cookie opcional é ativado nesta versão.
+(function initPrivacyNotice(){
+  const banner=document.querySelector('#privacyBanner');
+  const ok=document.querySelector('#privacyOk');
+  if(!banner||!ok)return;
+  let seen=false; try{seen=localStorage.getItem('qcr-privacy-notice-v1')==='1';}catch(_){ }
+  if(!seen)banner.hidden=false;
+  ok.addEventListener('click',()=>{try{localStorage.setItem('qcr-privacy-notice-v1','1');}catch(_){ }banner.hidden=true;});
+})();
