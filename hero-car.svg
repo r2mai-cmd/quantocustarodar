@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 430">
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".58" stop-color="#f5f8f8"/><stop offset="1" stop-color="#d9e2e3"/></linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#314c59"/><stop offset="1" stop-color="#122631"/></linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8fbfb"/><stop offset="1" stop-color="#c5d0d2"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#17394a" flood-opacity=".22"/></filter>
+  </defs>
+  <ellipse cx="455" cy="366" rx="340" ry="27" fill="#183747" opacity=".16"/>
+  <g filter="url(#shadow)">
+    <path d="M113 311c14-64 58-99 125-110l83-13 63-70c21-24 49-37 81-37h113c52 0 93 25 120 69l42 68 45 18c23 9 39 30 39 55v38H113z" fill="url(#body)" stroke="#c5d1d3" stroke-width="5"/>
+    <path d="M345 188l55-61c15-16 34-24 57-24h111c38 0 67 17 87 49l23 37z" fill="url(#glass)" stroke="#d9e3e5" stroke-width="6"/>
+    <path d="M459 106v79M582 104l12 80" stroke="#90a6ae" stroke-width="4" opacity=".65"/>
+    <path d="M119 311h671" stroke="#b7c4c7" stroke-width="5"/>
+    <path d="M141 279c22-23 50-34 82-34h52" stroke="#ffffff" stroke-width="9" opacity=".7"/>
+    <path d="M761 261h43c12 0 23 5 31 13l9 9h-83z" fill="#dff0d7"/>
+    <path d="M151 274h40" stroke="#0d9a3a" stroke-width="8" stroke-linecap="round"/>
+    <path d="M805 260l30 10" stroke="#0b8fdf" stroke-width="5" stroke-linecap="round" opacity=".7"/>
+    <g>
+      <circle cx="270" cy="330" r="64" fill="#22353e"/>
+      <circle cx="270" cy="330" r="45" fill="url(#rim)"/>
+      <circle cx="270" cy="330" r="17" fill="#8fa0a5"/>
+      <path d="M270 292v76M232 330h76M243 303l54 54M297 303l-54 54" stroke="#aebbbf" stroke-width="5"/>
+    </g>
+    <g>
+      <circle cx="685" cy="330" r="64" fill="#22353e"/>
+      <circle cx="685" cy="330" r="45" fill="url(#rim)"/>
+      <circle cx="685" cy="330" r="17" fill="#8fa0a5"/>
+      <path d="M685 292v76M647 330h76M658 303l54 54M712 303l-54 54" stroke="#aebbbf" stroke-width="5"/>
+    </g>
+    <path d="M124 302c-13-2-21-11-21-23v-10c0-8 5-14 13-16l28-7v47z" fill="#e6eef0" stroke="#b7c5c8" stroke-width="4"/>
+    <path d="M791 306c16 0 27-8 33-21" stroke="#c6d1d3" stroke-width="5"/>
+  </g>
+</svg>
