@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Quanto Custa Rodar? Compare carros pelo custo real de uso.">
+  <meta name="description" content="Quanto Custa Rodar? Compare carros pelo custo real de uso, com dados do Inmetro e cálculos personalizados.">
   <meta name="theme-color" content="#ffffff">
+  <link rel="canonical" href="https://quantocustarodar.com.br/">
   <title>Quanto Custa Rodar? — Compare carros pelo custo real</title>
   <link rel="icon" href="logo.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
@@ -14,103 +15,72 @@
   <a class="brand" href="#top" aria-label="Quanto Custa Rodar?">
     <img src="logo.svg" alt="">
     <span class="brand-copy">
-      <strong>Quanto Custa <em>Rodar?</em></strong>
-      <small>COMPARA. CALCULA. DECIDA MELHOR.</small>
+      <strong>Quanto Custa Rodar?</strong>
+      <small>COMPARE. CALCULE. DECIDA MELHOR.</small>
     </span>
   </a>
   <nav class="main-nav" aria-label="Navegação principal">
     <a class="active" href="#comparar">Comparar</a>
     <a href="#carros">Carros</a>
-    <a href="#guias">Guias</a>
+    <a href="#fontes">Fontes</a>
     <a href="#sobre">Sobre</a>
   </nav>
-  <a class="search-button" href="#comparar" aria-label="Ir para comparação">⌕</a>
+  <a class="search-button" href="#comparar" aria-label="Buscar carros">⌕</a>
   <a class="header-cta" href="#comparar">Comparar carros <span>→</span></a>
 </header>
 
 <main id="top">
-<section class="hero">
-  <div class="hero-copy">
-    <p class="eyebrow">ELÉTRICO · HÍBRIDO · COMBUSTÃO</p>
-    <h1>Compare carros.<br>Decida <em>melhor.</em></h1>
-    <p class="hero-sub">Veja o custo real de propriedade, autonomia, manutenção, IPVA e muito mais. Escolha os carros que você quer comparar e descubra qual faz mais sentido para o seu uso.</p>
-  </div>
+  <section class="profile-bar" aria-label="Seus parâmetros de custo">
+    <div class="profile-title"><span class="gear">⚙</span><div><b>Seus parâmetros de custo</b><small>Esses valores entram diretamente nos cálculos.</small></div></div>
+    <label>Gasolina <input id="gasPrice" type="number" value="6.19" min="0" step="0.01"><small>R$/litro</small></label>
+    <label>Etanol <input id="ethPrice" type="number" value="4.09" min="0" step="0.01"><small>R$/litro</small></label>
+    <label>Energia <input id="kwhPrice" type="number" value="0.89" min="0" step="0.01"><small>R$/kWh</small></label>
+    <label class="solar-label"><input id="solar" type="checkbox"> <span>Tenho energia solar</span><small id="solarHint">considera R$ 0,00/kWh</small></label>
+    <label>Estado<select id="state"><option value="RS">RS</option><option value="SP">SP</option><option value="PR">PR</option><option value="SC">SC</option><option value="MG">MG</option><option value="RJ">RJ</option></select><small>IPVA</small></label>
+    <label>Km por mês<input id="kmMonth" type="number" value="1500" min="1" step="50"><small>km</small></label>
+    <button class="green-button" id="recalculate" type="button">↻ Atualizar cálculos</button>
+  </section>
 
-  <div class="hero-visual" aria-hidden="true">
-    <div class="mountain m1"></div><div class="mountain m2"></div>
-    <div class="cityline"></div>
-    <div class="road"></div>
-    <div class="hero-sun"></div>
-    <img class="hero-car-image" src="hero-car.svg" alt="" />
-    <div class="hero-note"><span>MENOS DÚVIDAS.</span><b>MAIS ESTRADAS.</b><i></i></div>
-  </div>
-
-  <div class="comparison-card" id="comparar">
-    <div class="car-fields" id="carFields"></div>
-    <button class="add-car" id="addCar" type="button">
-      <span>+</span><b>Adicionar carro</b><small>(até 4)</small>
-    </button>
-
-    <div class="advanced-row">
-      <button class="advanced-toggle" id="advancedToggle" type="button">☷ &nbsp; Comparação avançada <span>⌄</span></button>
-      <button class="compare-button" id="compareButton" type="button">Comparar agora <span>→</span></button>
+  <section class="compare-section" id="comparar">
+    <div class="section-head">
+      <div><p class="eyebrow">QUANTO CUSTA RODAR?</p><h1>Comparação de carros</h1><p>Veja lado a lado o custo real para o seu perfil.</p></div>
+      <div class="data-status" id="dataStatus">Carregando PBEV 2026…</div>
     </div>
 
-    <div class="advanced-panel" id="advancedPanel" hidden>
-      <div>
-        <label>Quilometragem mensal<input id="kmMonth" type="number" value="1250" min="100" step="50"><small>km/mês</small></label>
-        <label>Gasolina<input id="gasPrice" type="number" value="6.19" min="0" step=".01"><small>R$/litro</small></label>
-        <label>Etanol<input id="ethPrice" type="number" value="4.09" min="0" step=".01"><small>R$/litro</small></label>
-        <label>Energia<input id="kwhPrice" type="number" value=".89" min="0" step=".01"><small>R$/kWh</small></label>
-        <label>Estado<select id="state"><option value="RS">RS</option><option value="SP">SP</option><option value="PR">PR</option><option value="SC">SC</option><option value="MG">MG</option><option value="RJ">RJ</option></select></label>
-        <label>Energia solar<select id="solar"><option value="no">Não</option><option value="yes">Sim</option></select></label>
-        <label>Tempo de uso<select id="years"><option value="3">3 anos</option><option value="5" selected>5 anos</option><option value="7">7 anos</option></select></label>
-      </div>
+    <div class="compare-grid" id="compareGrid">
+      <div class="label-column intro-column"><div class="intro-icon">⇄</div><b>Compare os custos de uso</b><span>e descubra qual faz mais sentido para você.</span></div>
+      <div id="carColumns" class="car-columns"></div>
+      <button class="add-column" id="addCar" type="button"><span>+</span><b>Adicionar carro</b><small>até 4 veículos</small></button>
     </div>
-  </div>
-</section>
 
-<section class="trust-strip">
-  <article><span class="icon">◒</span><div><b>Custo real</b><p>Energia/combustível, manutenção, seguro e depreciação.</p></div></article>
-  <article><span class="icon">▥</span><div><b>Dados oficiais</b><p>Inmetro (PBEV), WLTP, CLTC e mercado brasileiro.</p></div></article>
-  <article><span class="icon">▣</span><div><b>IPVA por estado</b><p>Veja alíquotas, isenções e regras atualizadas.</p></div></article>
-  <article><span class="icon">♙</span><div><b>Personalizado</b><p>Use seus valores de energia, combustível e perfil.</p></div></article>
-</section>
+    <div class="comparison-table" id="comparisonTable"></div>
+    <div class="table-actions"><button class="secondary-button" id="showAllSpecs" type="button">Ver todas as especificações →</button></div>
+  </section>
 
-<section class="how" id="sobre">
-  <div class="how-top">
-    <div><p class="eyebrow">COMO FUNCIONA</p><h2>Três passos para decidir melhor</h2></div>
-    <a href="#guias">Saiba mais <span>→</span></a>
-  </div>
-  <div class="steps">
-    <article><span>1</span><div><b>Escolha os carros</b><p>Selecione até 4 modelos para comparar.</p></div></article>
-    <article><span>2</span><div><b>Informe seu perfil</b><p>Km por mês, preços de energia/combustível, estado, se tem energia solar, entre outros.</p></div></article>
-    <article><span>3</span><div><b>Veja o resultado</b><p>Compare o custo total, ponto de equilíbrio, autonomia e muito mais.</p></div></article>
-  </div>
-</section>
+  <section class="verdict" id="resultado">
+    <div class="verdict-head"><div><p class="eyebrow">RESULTADO DA COMPARAÇÃO</p><h2>Qual vale mais para você?</h2><p>O resultado considera seu consumo, seus preços de energia/combustível e os custos fixos que estiverem disponíveis.</p></div><span class="verdict-tag">CÁLCULO PERSONALIZADO</span></div>
+    <div id="verdictContent" class="verdict-content"><div class="empty-verdict">Escolha pelo menos dois carros para ver o cálculo.</div></div>
+  </section>
 
-<section class="result-section" id="guias">
-  <div class="result-head">
-    <div><p class="eyebrow">RESULTADO DA COMPARAÇÃO</p><h2>O custo que importa é o seu.</h2></div>
-    <p>O resultado abaixo aparece depois de comparar. Ajuste seu perfil em “Comparação avançada” para uma simulação personalizada.</p>
-  </div>
-  <div id="resultArea" class="result-area">
-    <div class="result-placeholder"><span>≈</span><b>Compare dois carros para começar.</b><p>Você verá custo por km, gasto mensal e custo total estimado.</p></div>
-  </div>
-</section>
+  <section class="sources" id="fontes">
+    <div><p class="eyebrow">TRANSPARÊNCIA</p><h2>De onde vêm os números?</h2><p>O site separa dado de fonte oficial, informação de mercado e estimativa calculada. Nada deve aparecer como “oficial” sem uma fonte correspondente.</p></div>
+    <div class="source-cards">
+      <article><b>INMETRO / PBEV</b><span>Consumo, eficiência e autonomia elétrica.</span><a href="https://www.gov.br/inmetro/pt-br/assuntos/regulamentacao/avaliacao-da-conformidade/programa-brasileiro-de-etiquetagem/tabelas-de-eficiencia-energetica/veiculos-automotivos-pbe-veicular" target="_blank" rel="noopener">Abrir fonte oficial →</a></article>
+      <article><b>FIPE</b><span>Preço médio de referência, quando consultado por modelo/ano.</span><a href="https://www.fipe.org.br/pt-br/indices/veiculos" target="_blank" rel="noopener">Abrir fonte oficial →</a></article>
+      <article><b>IPVA / SEFAZ</b><span>Alíquotas e regras dependem do estado e do exercício.</span><a href="https://www.ipva.rs.gov.br/" target="_blank" rel="noopener">Consultar portal estadual →</a></article>
+    </div>
+  </section>
 
-<section class="footer-cta">
-  <div><p class="eyebrow">MOBILIDADE MAIS INTELIGENTE</p><h2>Compare antes de comprar.</h2><p>Mais informação. Mais economia.</p></div>
-  <a class="header-cta" href="#comparar">Comparar carros <span>→</span></a>
-</section>
+  <section class="about" id="sobre"><div><p class="eyebrow">SOBRE O PROJETO</p><h2>Mais informação. Melhores escolhas.</h2></div><p>O Quanto Custa Rodar? transforma dados técnicos e parâmetros do motorista em uma comparação financeira simples. O objetivo é mostrar não só qual carro consome menos, mas quando ele realmente passa a valer mais a pena.</p></section>
 </main>
 
-<footer id="carros">
-  <div class="footer-brand"><img src="logo.svg" alt=""><b>Quanto Custa Rodar?</b></div>
-  <p>Protótipo em desenvolvimento. Estimativas são informativas e podem variar conforme versão, uso, preços e legislação.</p>
-</footer>
+<div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+<aside class="drawer" id="specDrawer" aria-hidden="true">
+  <button class="drawer-close" id="drawerClose" type="button" aria-label="Fechar">×</button>
+  <div id="drawerContent"></div>
+</aside>
+
+<footer id="carros"><div class="footer-brand"><img src="logo.svg" alt=""><b>Quanto Custa Rodar?</b></div><p>quantocustarodar.com.br · Dados e cálculos informativos. Consulte as fontes e a data de referência.</p></footer>
 <script src="app.js"></script>
 </body>
 </html>
-
-

@@ -1,71 +1,51 @@
-const VEHICLES = [
-  {id:"dolphin",name:"BYD Dolphin",year:2026,type:"Elétrico",energy:"kwh",consumption:.145,maintenance:2100,insurance:4200,price:149800,ipva:.02},
-  {id:"corolla",name:"Toyota Corolla",year:2026,type:"Híbrido",energy:"gas",consumption:17.9,maintenance:3200,insurance:3900,price:184990,ipva:.03},
-  {id:"h6",name:"GWM Haval H6",year:2026,type:"Híbrido",energy:"gas",consumption:14.2,maintenance:3300,insurance:5100,price:219000,ipva:.025},
-  {id:"polo",name:"VW Polo",year:2026,type:"Combustão",energy:"gas",consumption:13.5,maintenance:2700,insurance:3500,price:95000,ipva:.03},
-  {id:"corollaCross",name:"Toyota Corolla Cross",year:2026,type:"Híbrido",energy:"gas",consumption:16.0,maintenance:3500,insurance:4400,price:205000,ipva:.03},
-  {id:"ora",name:"GWM Ora 03",year:2026,type:"Elétrico",energy:"kwh",consumption:.165,maintenance:2300,insurance:4300,price:169000,ipva:.02}
-];
+const PBEV_CSV_URL = "https://raw.githubusercontent.com/guiajf/pbev/main/data/tabela_pbev_2026.csv";
+const PBEV_SOURCE_URL = "https://www.gov.br/inmetro/pt-br/assuntos/regulamentacao/avaliacao-da-conformidade/programa-brasileiro-de-etiquetagem/tabelas-de-eficiencia-energetica/veiculos-automotivos-pbe-veicular";
 
-let selected=["dolphin","polo"];
+let VEHICLES=[];
+let selected=[];
 const $=s=>document.querySelector(s);
-const money=v=>v.toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0});
-const money2=v=>v.toLocaleString("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:2,maximumFractionDigits:2});
+const money=v=>Number.isFinite(v)?v.toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0}):"—";
+const money2=v=>Number.isFinite(v)?v.toLocaleString("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:2,maximumFractionDigits:2}):"—";
+const esc=s=>String(s??"").replace(/[&<>\"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 
-function fieldHTML(index){
-  const c=VEHICLES.find(v=>v.id===selected[index]);
-  return `<div class="car-field">
-    <label>Carro ${index+1}${index>1?' <span style="font-weight:500;color:#82909d">(opcional)</span>':''}</label>
-    <select class="car-select" data-index="${index}" aria-label="Selecionar carro ${index+1}">
-      ${VEHICLES.map(v=>`<option value="${v.id}" ${v.id===c.id?"selected":""}>${v.name} — ${v.year} · ${v.type}</option>`).join("")}
-    </select>
-  </div>`;
-}
-function renderFields(){
-  $("#carFields").innerHTML=selected.map((_,i)=>fieldHTML(i)).join("");
-  document.querySelectorAll(".car-select").forEach(s=>s.addEventListener("change",e=>{
-    selected[+e.target.dataset.index]=e.target.value; renderFields();
-  }));
-  $("#addCar").style.display=selected.length>=4?"none":"flex";
-}
-$("#addCar").addEventListener("click",()=>{
-  const next=VEHICLES.find(v=>!selected.includes(v.id));
-  if(next){selected.push(next.id);renderFields();}
-});
-$("#advancedToggle").addEventListener("click",()=>{
-  const p=$("#advancedPanel"); p.hidden=!p.hidden; $("#advancedToggle span").textContent=p.hidden?"⌄":"⌃";
-});
+function parseCSV(text){const out=[];let row=[],cell="",q=false;for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];if(c==='"'){if(q&&n==='"'){cell+='"';i++}else q=!q}else if(c===';'&&!q){row.push(cell);cell=''}else if((c==='\n'||c==='\r')&&!q){if(c==='\r'&&n==='\n')i++;row.push(cell);cell='';if(row.some(x=>x.trim()))out.push(row);row=[]}else cell+=c}if(cell||row.length){row.push(cell);if(row.some(x=>x.trim()))out.push(row)}return out}
+function num(v){const n=Number(String(v??"").replace(",","."));return Number.isFinite(n)?n:null}
+function uid(r,i){return `${r.marca}-${r.modelo}-${r.versao}-${i}`.toLowerCase().replace(/[^a-z0-9]+/gi,"-")}
+function mapPBEV(text){const rows=parseCSV(text);const h=rows.shift().map(x=>x.replace(/^\uFEFF/,'').trim());const ix=Object.fromEntries(h.map((x,i)=>[x,i]));return rows.map((r,i)=>{const prop=r[ix.propulsao]||"",fuel=r[ix.combustivel]||"";const mj=num(r[ix.consumo_mj_km]);const gc=num(r[ix.gas_diesel_cid_kml]),gr=num(r[ix.gas_diesel_est_kml]),ec=num(r[ix.etanol_cid_kml]),er=num(r[ix.etanol_est_kml]);const electric=prop.toLowerCase().includes("elétrico")||!!r[ix.eletr_ve_gas_cid_kmle];return {id:uid({marca:r[ix.marca],modelo:r[ix.modelo],versao:r[ix.versao]},i),brand:r[ix.marca]||"",model:r[ix.modelo]||"",version:r[ix.versao]||"",type:prop||"Não informado",fuel,category:r[ix.categoria]||"",gasCity:gc,gasRoad:gr,ethCity:ec,ethRoad:er,kwhPerKm:mj?mj/3.6:null,autonomy:num(r[ix.autonomia_km]),power:null,torque:null,source:"INMETRO PBEV 2026"}}).filter(v=>v.brand&&v.model)}
 
-function calc(v){
-  const km=Number($("#kmMonth").value)||1250;
-  const gas=Number($("#gasPrice").value)||6.19;
-  let kwh=Number($("#kwhPrice").value)||.89;
-  if($("#solar").value==="yes") kwh*=.35;
-  const monthly=v.energy==="kwh" ? km*v.consumption*kwh : km/v.consumption*gas;
-  const annual=monthly*12;
-  const years=Number($("#years").value)||5;
-  const fixed=(v.maintenance+v.insurance+(v.price*v.ipva))*years;
-  const total=annual*years+fixed;
-  return {monthly,annual,total,costKm:total/(km*12*years)};
-}
-function compare(){
-  const rows=selected.map(id=>{const v=VEHICLES.find(x=>x.id===id);return {v,...calc(v)}});
-  const min=Math.min(...rows.map(r=>r.total));
-  $("#resultArea").innerHTML=`<div class="result-grid">${rows.map(r=>`
-    <article class="result-card ${r.total===min?"winner":""}">
-      <span class="eyebrow">${r.v.type.toUpperCase()}</span>
-      <h3>${r.v.name}</h3><span class="type">${r.v.year} · estimativa de protótipo</span>
-      <div class="result-cost">${money(r.total)}</div>
-      <div class="result-meta">custo total estimado em ${$("#years").value} anos</div>
-      ${r.total===min?'<span class="result-badge">MENOR CUSTO NO CENÁRIO</span>':""}
-      <div class="result-foot">
-        <div><span>Por km</span><b>${money2(r.costKm)}</b></div>
-        <div><span>Por mês</span><b>${money(r.monthly)}</b></div>
-        <div><span>Por ano</span><b>${money(r.annual)}</b></div>
-      </div>
-    </article>`).join("")}</div>
-    <p style="font-size:10px;color:#82909d;margin-top:12px">Protótipo: valores de manutenção, seguro, preço e IPVA são demonstrativos. Na versão de produção, cada dado terá fonte e data de atualização.</p>`;
-  $("#resultArea").scrollIntoView({behavior:"smooth",block:"nearest"});
-}
-$("#compareButton").addEventListener("click",compare);
-renderFields();
+function avg(a,b){return Number.isFinite(a)&&Number.isFinite(b)?a*.55+b*.45:(a??b)}
+function isElectric(v){return /elétric/i.test(v.type)||/elétric/i.test(v.fuel)||Number.isFinite(v.kwhPerKm)&&!Number.isFinite(v.gasCity)}
+function isHybrid(v){return /híbrido|plug-in/i.test(v.type)}
+function carName(v){return `${v.brand} ${v.model}`}
+
+function renderCars(){const host=$("#carColumns");host.innerHTML=selected.map((id,i)=>{const v=VEHICLES.find(x=>x.id===id);return `<article class="car-card"><button class="remove" data-remove="${i}" aria-label="Remover">×</button><div class="car-photo"><div class="car-placeholder">🚗</div></div><h3>${esc(carName(v))}</h3><div class="version">${esc(v.version||"Versão conforme PBEV 2026")} · ${esc(v.type)}</div><div class="car-price">—</div><div class="price-note">FIPE ainda não integrada automaticamente</div><button class="spec-link" data-spec="${v.id}">Ficha técnica →</button></article>`}).join("");document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{selected.splice(+b.dataset.remove,1);renderAll()});document.querySelectorAll('[data-spec]').forEach(b=>b.onclick=()=>openDrawer(b.dataset.spec));$("#addCar").style.display=selected.length>=4?"none":"flex"}
+
+function profile(){const km=Number($("#kmMonth").value)||1500;const gas=Number($("#gasPrice").value)||0;const eth=Number($("#ethPrice").value)||0;const kwh=Number($("#kwhPrice").value)||0;const solar=$("#solar").checked;return {km,gas,eth,kwh:solar?0:kwh,state:$("#state").value,annualKm:km*12}}
+
+function energy(v,p){if(isElectric(v)&&Number.isFinite(v.kwhPerKm)){return {kind:"eletricidade",costKm:v.kwhPerKm*p.kwh,detail:`${(v.kwhPerKm*100).toFixed(1).replace('.',',')} kWh/100 km`}}const g=avg(v.gasCity,v.gasRoad),e=avg(v.ethCity,v.ethRoad);if(Number.isFinite(g)&&Number.isFinite(e)&&p.gas&&p.eth){const cg=p.gas/g,ce=p.eth/e;if(ce<cg)return {kind:"etanol",costKm:ce,detail:`${e.toFixed(1).replace('.',',')} km/l · etanol`};return {kind:"gasolina",costKm:cg,detail:`${g.toFixed(1).replace('.',',')} km/l · gasolina`} }if(Number.isFinite(g)&&p.gas)return {kind:"gasolina",costKm:p.gas/g,detail:`${g.toFixed(1).replace('.',',')} km/l · gasolina`};return {kind:"combustível",costKm:null,detail:"consumo disponível no PBEV, preço não informado"}}
+
+function ipvaNote(v,p){if(p.state==="RS"&&isElectric(v))return {annual:0,label:"Isento no RS (veículo de força motriz elétrica)",source:"Receita Estadual RS"};if(p.state==="RS")return {annual:null,label:"Alíquota RS: 3% para automóveis/camionetas; valor venal não integrado",source:"SEFAZ/RS"};return {annual:null,label:"Regra estadual ainda não integrada automaticamente",source:"SEFAZ estadual"}}
+
+function maintenance(v){return null}
+function calc(v,p){const e=energy(v,p),ip=ipvaNote(v,p),maint=maintenance(v);const energyAnnual=Number.isFinite(e.costKm)?e.costKm*p.annualKm:null;const fixedAnnual=(Number.isFinite(ip.annual)?ip.annual:0)+(Number.isFinite(maint)?maint:0);const annual=Number.isFinite(energyAnnual)?energyAnnual+fixedAnnual:null;return {e,ip,maint,energyAnnual,fixedAnnual,annual,costKm:Number.isFinite(annual)?annual/p.annualKm:e.costKm}}
+
+function table(){const p=profile();const results=selected.map(id=>{const v=VEHICLES.find(x=>x.id===id);return {v,r:calc(v,p)}});const minEnergy=Math.min(...results.map(x=>x.r.e.costKm).filter(Number.isFinite));const rows=[
+ {group:"Consumo e energia",items:[['Consumo cidade',x=>isElectric(x.v)?(Number.isFinite(x.v.kwhPerKm)?`${(x.v.kwhPerKm*100).toFixed(1).replace('.',',')} kWh/100 km`:"—"):(Number.isFinite(x.v.gasCity)?`${x.v.gasCity.toFixed(1).replace('.',',')} km/l (G)`:"—")],['Consumo estrada',x=>isElectric(x.v)?(Number.isFinite(x.v.kwhPerKm)?"—":"—"):(Number.isFinite(x.v.gasRoad)?`${x.v.gasRoad.toFixed(1).replace('.',',')} km/l (G)`:"—")],['Autonomia (PBEV)',x=>Number.isFinite(x.v.autonomy)?`${x.v.autonomy.toLocaleString('pt-BR')} km`:"—"],['Custo por km',x=>Number.isFinite(x.r.e.costKm)?money2(x.r.e.costKm):"—"]]},
+ {group:"Impostos",items:[['IPVA anual',x=>x.r.ip.annual===0?"R$ 0":x.r.ip.label],['Base do cálculo',x=>x.r.ip.annual===0?"Isenção identificada":"Preço/FIPE não integrado"]]},
+ {group:"Manutenção",items:[['Revisões',x=>"Não integrada automaticamente"],['Fonte',x=>"A definir por fabricante/versão"]]},
+ {group:"Custo estimado",items:[['Energia/combustível por mês',x=>Number.isFinite(x.r.e.costKm)?money(x.r.e.costKm*p.km):"—"],['Energia/combustível por ano',x=>Number.isFinite(x.r.energyAnnual)?money(x.r.energyAnnual):"—"],['Custo total anual',x=>Number.isFinite(x.r.annual)?money(x.r.annual):"Parcial"],['Custo em 5 anos',x=>Number.isFinite(x.r.annual)?money(x.r.annual*5):"Parcial"]]}
+];
+let html="";for(const g of rows){html+=`<div class="table-row group-row"><div>${g.group}</div>${results.map(()=>'<div></div>').join('')}</div>`;for(const [label,fn] of g.items){html+=`<div class="table-row"><div>${label}</div>${results.map(x=>{const val=fn(x);const win=label.includes('Custo por km')&&Number.isFinite(x.r.e.costKm)&&x.r.e.costKm===minEnergy;return `<div class="${win?'winner-cell':''}">${val}</div>`}).join('')}</div>`}}
+$("#comparisonTable").innerHTML=html;renderVerdict(results,p)}
+
+function renderVerdict(results,p){const valid=results.filter(x=>Number.isFinite(x.r.e.costKm));if(valid.length<2){$("#verdictContent").innerHTML='<div class="empty-verdict">Escolha pelo menos dois carros com consumo disponível para calcular o ponto de equilíbrio.</div>';return}const sorted=[...valid].sort((a,b)=>a.r.costKm-b.r.costKm);const winner=sorted[0],second=sorted[1];const annualSaving=Number.isFinite(winner.r.annual)&&Number.isFinite(second.r.annual)?second.r.annual-winner.r.annual:null;const fixedWinner=winner.r.fixedAnnual, fixedSecond=second.r.fixedAnnual;const deltaEnergy=second.r.e.costKm-winner.r.e.costKm;let breakKm=null;if(deltaEnergy>0)breakKm=Math.max(0,(fixedWinner-fixedSecond)/deltaEnergy);const bars=sorted.map(x=>`<div class="bar ${x===winner?'best':''}"><label>${esc(carName(x.v))}</label><i style="width:${Math.max(12,Math.min(100,(x.r.costKm/winner.r.costKm)*100))}%"></i><b>${money2(x.r.costKm)}/km</b></div>`).join('');$("#verdictContent").innerHTML=`<div class="verdict-grid"><article class="winner-panel"><span class="trophy">🏆</span><small>MENOR CUSTO CALCULÁVEL</small><h3>${esc(carName(winner.v))}</h3><p>${esc(winner.r.e.detail)}</p>${annualSaving!==null?`<span class="saving">Economia estimada de ${money(Math.abs(annualSaving))}/ano</span>`:'<span class="saving">Menor custo de energia/combustível</span>'}</article><article class="break-panel"><b>⚖️ Ponto de equilíbrio</b><p>Comparando com ${esc(carName(second.v))}:</p>${breakKm!==null?`<div class="big-number">${Math.round(breakKm).toLocaleString('pt-BR')} km/ano</div><p>${breakKm===0?'A vantagem já aparece nos custos fixos informados.':'acima desse uso, a economia por km compensa a diferença de custos fixos.'}</p>`:'<p class="big-number">Ainda não calculável</p><p>O ponto de equilíbrio exige custos fixos comparáveis, como IPVA e manutenção, para os dois veículos.</p>'}</article><article class="chart-panel"><b>Comparativo por km</b>${bars}</article></div><p class="calc-foot">Importante: o veredito só considera dados efetivamente disponíveis. IPVA sem valor venal e manutenção sem fonte por versão não são inventados. Preços FIPE e revisões serão integrados em uma etapa própria.</p>`}
+
+function openDrawer(id){const v=VEHICLES.find(x=>x.id===id);if(!v)return;const rows=[['Marca',v.brand],['Modelo',v.model],['Versão',v.version||'—'],['Propulsão',v.type],['Combustível',v.fuel||'—'],['Consumo cidade',Number.isFinite(v.gasCity)?`${v.gasCity} km/l`:Number.isFinite(v.kwhPerKm)?`${(v.kwhPerKm*100).toFixed(1)} kWh/100 km`:'—'],['Consumo estrada',Number.isFinite(v.gasRoad)?`${v.gasRoad} km/l`:'—'],['Autonomia elétrica',Number.isFinite(v.autonomy)?`${v.autonomy} km`:'—']];$("#drawerContent").innerHTML=`<p class="eyebrow">PBEV 2026</p><h2>${esc(carName(v))}</h2><div class="drawer-sub">${esc(v.version||'Versão conforme cadastro do Inmetro')}</div><div class="drawer-photo"><div class="car-placeholder">🚗</div></div><div class="drawer-section"><h3>Dados disponíveis</h3>${rows.map(r=>`<div class="drawer-row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join('')}</div><p class="drawer-source">Fonte principal: INMETRO / Programa Brasileiro de Etiquetagem Veicular 2026. O PBEV é uma referência padronizada de eficiência; consumo real varia conforme uso, trânsito, clima, pneus, carga e condução.</p>`;$("#drawerBackdrop").hidden=false;requestAnimationFrame(()=>$("#specDrawer").classList.add('open'));$("#specDrawer").setAttribute('aria-hidden','false')}
+function closeDrawer(){$("#specDrawer").classList.remove('open');$("#specDrawer").setAttribute('aria-hidden','true');setTimeout(()=>$("#drawerBackdrop").hidden=true,250)}
+
+function renderAll(){renderCars();table()}
+$("#addCar").onclick=()=>{const next=VEHICLES.find(v=>!selected.includes(v.id));if(next){selected.push(next.id);renderAll()}};
+["#gasPrice","#ethPrice","#kwhPrice","#kmMonth","#state","#solar"].forEach(s=>$(s).addEventListener('input',()=>{if(s==='#solar')$("#solarHint").textContent=$("#solar").checked?'custo de energia considerado: R$ 0,00/kWh':'usa o preço informado acima';table()}));$("#recalculate").onclick=table;$("#showAllSpecs").onclick=()=>selected[0]&&openDrawer(selected[0]);$("#drawerClose").onclick=closeDrawer;$("#drawerBackdrop").onclick=closeDrawer;
+
+async function load(){try{const r=await fetch(PBEV_CSV_URL,{cache:'no-store'});if(!r.ok)throw new Error();VEHICLES=mapPBEV(await r.text());if(VEHICLES.length<100)throw new Error();selected=[VEHICLES.findIndex(v=>/BYD/i.test(v.brand)&&/DOLPHIN/i.test(v.model))>=0?VEHICLES.find(v=>/BYD/i.test(v.brand)&&/DOLPHIN/i.test(v.model)).id:VEHICLES[0].id,VEHICLES.findIndex(v=>/TOYOTA/i.test(v.brand)&&/COROLLA/i.test(v.model))>=0?VEHICLES.find(v=>/TOYOTA/i.test(v.brand)&&/COROLLA/i.test(v.model)).id:VEHICLES[1].id,VEHICLES.findIndex(v=>/HONDA/i.test(v.brand)&&/CIVIC/i.test(v.model))>=0?VEHICLES.find(v=>/HONDA/i.test(v.brand)&&/CIVIC/i.test(v.model)).id:VEHICLES[2].id];$("#dataStatus").textContent=`${VEHICLES.length} registros carregados · PBEV 2026`;$("#dataStatus").classList.add('ok');renderAll()}catch(e){$("#dataStatus").textContent='Não foi possível carregar a base PBEV agora.'}}
+load();
