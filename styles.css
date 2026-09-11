@@ -229,3 +229,34 @@
 .all-spec-photo .drawer-photo { min-height:185px; height:185px; width:100%; }
 @media(max-width:720px){ .car-photo { min-height:100px; height:100px; } .drawer-photo { min-height:190px; height:190px; } .all-spec-photo, .all-spec-photo .drawer-photo { min-height:175px; height:175px; } }
 @media(max-width:480px){ .all-spec-photo, .all-spec-photo .drawer-photo { min-height:165px; height:165px; } }
+
+
+/* V11 — identidade final: bico de bomba + raio, hero moderno e 2 carros como padrão. */
+:root{--hero-navy:#10243d;--hero-blue:#1b9fd0}
+.site-header{height:76px;padding:0 30px;gap:22px;border-bottom:1px solid #e5ece9;box-shadow:0 5px 20px rgba(16,36,61,.05)}
+.brand{min-width:320px;gap:10px}.brand img{width:55px;height:42px}.brand-copy strong{font-size:20px}.brand-copy small{color:#0b8b48;font-size:8.5px}
+.main-nav{gap:5px}.main-nav a{font-size:12px;padding:0 13px;color:#31445b}.main-nav a.active{background:#e8f7ef;color:#087b3d}
+.search-button{background:#f6faf8;border-color:#dce8e2}
+.hero-modern{max-width:1200px;margin:18px auto 0;min-height:330px;border-radius:22px;overflow:hidden;position:relative;display:grid;grid-template-columns:1.05fr .95fr;background:linear-gradient(115deg,#f7fbfa 0%,#eef8f3 55%,#e8f2ef 100%);border:1px solid #e1ebe7;box-shadow:0 14px 38px rgba(16,36,61,.06)}
+.hero-copy{padding:45px 42px 38px;position:relative;z-index:2}.hero-kicker{font-size:11px;font-weight:900;letter-spacing:1.8px;color:var(--green)}
+.hero-copy h1{font-size:52px;line-height:.98;letter-spacing:-2.8px;margin:12px 0 13px;color:var(--hero-navy)}.hero-copy h1 em{font-style:normal;color:var(--green)}
+.hero-copy>p{max-width:610px;margin:0;color:#5d6f82;font-size:17px;line-height:1.45}.hero-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}.hero-pills span{font-size:10px;font-weight:800;color:#27516a;background:rgba(255,255,255,.8);border:1px solid #dbe8e3;border-radius:99px;padding:7px 10px}.hero-cta{display:inline-flex;align-items:center;gap:12px;margin-top:20px;background:var(--green);color:#fff;border-radius:10px;padding:11px 16px;font-size:12px;font-weight:850;box-shadow:0 7px 18px rgba(11,154,73,.18)}.hero-cta b{font-size:16px}
+.hero-art{position:relative;min-height:330px;display:flex;align-items:flex-end;justify-content:flex-end;overflow:hidden}.hero-art:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 55% 48%,rgba(255,255,255,.85),rgba(255,255,255,0) 48%)}.hero-glow{position:absolute;width:330px;height:330px;right:-20px;top:10px;border-radius:50%;background:radial-gradient(circle,rgba(11,154,73,.13),rgba(27,159,208,.05) 45%,transparent 70%)}.hero-art img{position:relative;width:112%;max-width:690px;height:auto;margin:0 -45px -35px 0;filter:drop-shadow(0 18px 20px rgba(16,36,61,.13))}
+.profile-bar{margin-top:16px}
+/* Foto inteira, sem crop: o conteúdo do carro sempre fica visível. */
+.car-photo,.drawer-photo,.all-spec-photo{background:linear-gradient(145deg,#f6f9f8,#edf3f1)}.car-photo img,.drawer-photo img,.all-spec-photo img{object-fit:contain!important;object-position:center!important;padding:5px!important;width:100%;height:100%}.car-photo{height:112px}.all-spec-photo,.all-spec-photo .drawer-photo{height:160px}.drawer-photo{height:170px}
+/* Exatamente dois carros no estado inicial. O 3º/4º só nasce depois do clique em Adicionar carro. */
+.compare-grid{--car-count:2}.add-car-row{display:flex;align-items:center;justify-content:center;gap:10px;margin:0;border:1px dashed #a9d8bd;border-top:0;background:#f5fcf8;color:var(--green);min-height:58px;border-radius:0 0 10px 10px}.add-car-row span{width:32px;height:32px;border:2px solid #79c79a;border-radius:50%;display:grid;place-items:center;font-size:22px}.add-car-row b{font-size:12px}.add-car-row small{font-size:10px;color:#74838e}
+/* Legibilidade da tabela. */
+.table-head-row>div,.table-row>div{font-size:12px;padding:10px 9px;line-height:1.35}.table-head-row>div{font-size:12px}.table-row>div:first-child{font-size:11.5px}.group-row>div{font-size:11.5px}
+@media(max-width:1050px){.hero-modern{margin-left:16px;margin-right:16px}.hero-copy h1{font-size:44px}.hero-art img{width:125%;margin-right:-70px}.main-nav a:nth-child(n+3){display:none}}
+@media(max-width:720px){
+ .site-header{height:62px;padding:0 12px}.brand{gap:8px}.brand img{width:43px;height:34px}.brand-copy strong{font-size:15px}.brand-copy small{font-size:7px}.search-button{width:35px;height:35px}
+ .hero-modern{display:block;min-height:0;margin:10px 8px 0;border-radius:16px}.hero-copy{padding:24px 18px 18px}.hero-kicker{font-size:8px;letter-spacing:1.3px}.hero-copy h1{font-size:32px;letter-spacing:-1.7px;margin:8px 0 9px}.hero-copy>p{font-size:12px;line-height:1.4}.hero-pills{gap:5px;margin-top:12px}.hero-pills span{font-size:8px;padding:5px 7px}.hero-cta{font-size:10px;padding:9px 12px;margin-top:12px}.hero-art{height:118px;min-height:118px}.hero-art img{width:125%;max-width:none;margin:0 -45px -35px 0}.profile-bar{margin:10px 8px 0}
+ .compare-section{margin-top:18px}.section-head h1{font-size:25px}.section-head>div:first-child p:last-child{font-size:11px}
+ /* No celular, os dois cards padrão cabem lado a lado; somente após adicionar um terceiro há rolagem horizontal. */
+ .compare-grid{grid-template-columns:29% repeat(var(--car-count,2),minmax(0,1fr))!important;min-width:0!important;overflow:hidden}.intro-column{display:flex!important;padding:9px 6px}.intro-column b{font-size:9px}.intro-column span{font-size:7px}.car-card{min-width:0!important;width:auto!important;padding:8px 6px 10px}.car-photo{height:76px!important}.car-card h3{font-size:10px}.car-card .version{font-size:7.5px;min-height:20px}.price-note{font-size:7.5px}.spec-link{font-size:8px}.add-car-row{min-height:48px}
+ .comparison-table{overflow:hidden}.table-head-row,.table-row{grid-template-columns:29% repeat(var(--car-count,2),minmax(0,1fr))!important;min-width:0!important}.table-head-row>div,.table-row>div{font-size:10.5px;padding:9px 5px}.table-head-row>div{font-size:10.5px}.table-row>div:first-child{font-size:10px}.group-row>div{font-size:10px}
+ .all-spec-photo,.all-spec-photo .drawer-photo{height:125px}.drawer-photo{height:150px}
+}
+@media(max-width:380px){.hero-copy h1{font-size:29px}.hero-pills span{font-size:7.5px}.brand-copy strong{font-size:14px}.compare-grid{grid-template-columns:28% repeat(var(--car-count,2),minmax(0,1fr))!important}.table-head-row,.table-row{grid-template-columns:28% repeat(var(--car-count,2),minmax(0,1fr))!important}.table-head-row>div,.table-row>div{font-size:9.5px;padding:8px 4px}}

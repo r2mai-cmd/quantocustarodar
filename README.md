@@ -1,17 +1,17 @@
-# Quanto Custa Rodar? — V8
+# Quanto Custa Rodar?
 
-Versão limpa para GitHub Pages. O `index.html` fica na raiz do projeto.
+Versão de desenvolvimento com identidade visual moderna, logo de bico de bomba + raio, cabeçalho responsivo e comparação iniciando com exatamente 2 carros.
 
-## Fotos dos carros
+## Estrutura
+- `index.html`
+- `app.js`
+- `styles.css`
+- `logo.svg`
+- `hero-car.svg`
+- `.nojekyll`
 
-Os cards procuram fotos reais de veículos no Wikimedia Commons. Para modelos conhecidos há arquivos previamente definidos; para os demais, o site consulta a API pública do Wikimedia Commons e escolhe um resultado relacionado à marca/modelo. As imagens são tratadas como ilustrativas porque a foto disponível pode não corresponder exatamente ao ano/versão do PBEV.
+## Dados
+Consumo/autonomia: PBEV 2026 / Inmetro. Fotos: busca e referências do Wikimedia Commons.
 
-Quando a foto tem licença que exige atribuição, a ficha técnica exibe a origem/crédito.
-
-Fonte técnica dos dados de consumo/autonomia: Inmetro PBEV 2026.
-
-
-## V10
-- Fotos dos veículos preservam a proporção original e não são cortadas por CSS.
-- Foto específica do Fiat 500e ICON adicionada.
-- Cache de fotos versionado como v10.
+## Publicação
+Suba os arquivos na raiz do repositório GitHub Pages (`main` / root).
