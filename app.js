@@ -1,101 +1,30 @@
-const vehicles = [
-  {id:"dolphin", name:"BYD Dolphin", version:"Elétrico · demonstrativo", kind:"Elétrico", price:149800, efficiency:0.145, fuelType:"kwh", maintenance:2100, insurance:4200, depreciation:0.50, ipvaRate:0.02, autonomy:291},
-  {id:"h6", name:"GWM Haval H6", version:"Híbrido · demonstrativo", kind:"Híbrido", price:219000, efficiency:0.145, fuelType:"gas", maintenance:3300, insurance:5100, depreciation:0.34, ipvaRate:0.025, autonomy:0},
-  {id:"corolla", name:"Toyota Corolla", version:"Combustão · demonstrativo", kind:"Combustão", price:151000, efficiency:13.2, fuelType:"gas", maintenance:3200, insurance:3900, depreciation:0.32, ipvaRate:0.03, autonomy:0},
-  {id:"ora", name:"GWM Ora 03", version:"Elétrico · demonstrativo", kind:"Elétrico", price:169000, efficiency:0.165, fuelType:"kwh", maintenance:2300, insurance:4300, depreciation:0.46, ipvaRate:0.02, autonomy:232}
+const cars=[
+{id:"dolphin",name:"Elétrico compacto",type:"Elétrico",eff:.145,kind:"kwh"},
+{id:"hybrid",name:"Híbrido médio",type:"Híbrido",eff:14.2,kind:"gas"},
+{id:"flex",name:"Flex compacto",type:"Combustão",eff:12.5,kind:"gas"},
+{id:"sedan",name:"Sedã eficiente",type:"Combustão",eff:13.5,kind:"gas"}
 ];
-
-let selected = [vehicles[0].id, vehicles[2].id];
-
-const money = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0});
-const money2 = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:2,maximumFractionDigits:2});
-const number = v => v.toLocaleString("pt-BR");
-
-function renderSlots(){
-  const wrap = document.getElementById("carSlots");
-  wrap.innerHTML = selected.map((id,i)=>{
-    const car = vehicles.find(v=>v.id===id);
-    return `<div class="car-card active">
-      <span class="car-number">Carro ${i+1}</span>
-      ${i>1?`<button class="remove-car" data-remove="${i}" aria-label="Remover carro">×</button>`:""}
-      <h3>${car.name}</h3><p>${car.version}</p>
-      <select class="car-select" data-index="${i}">
-        ${vehicles.map(v=>`<option value="${v.id}" ${v.id===id?"selected":""}>${v.name} — ${v.kind}</option>`).join("")}
-      </select>
-    </div>`;
-  }).join("");
-  document.querySelectorAll(".car-select").forEach(el=>el.addEventListener("change",e=>{
-    selected[+e.target.dataset.index]=e.target.value;
-    renderSlots();
-  }));
-  document.querySelectorAll("[data-remove]").forEach(el=>el.addEventListener("click",()=>{
-    selected.splice(+el.dataset.remove,1); renderSlots();
-  }));
-  document.getElementById("addCar").style.display=selected.length>=4?"none":"flex";
+let choices=[cars[0].id,cars[2].id];
+const money=v=>v.toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0});
+const money2=v=>v.toLocaleString("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:2,maximumFractionDigits:2});
+function fill(){
+ for(const id of ["car1","car2"]){
+  const s=document.getElementById(id);const idx=id==="car1"?0:1;
+  s.innerHTML=cars.map(c=>`<option value="${c.id}" ${c.id===choices[idx]?"selected":""}>${c.name}</option>`).join("");
+  s.onchange=e=>{choices[idx]=e.target.value;sync()};
+ }
+ sync();
 }
-document.getElementById("addCar").addEventListener("click",()=>{
-  const next=vehicles.find(v=>!selected.includes(v.id));
-  if(next){selected.push(next.id);renderSlots();}
-});
-
-function profile(){
-  const kmMonth=+document.getElementById("kmMonth").value||1500;
-  const gas=+document.getElementById("gasPrice").value||6.2;
-  let kwh=+document.getElementById("kwhPrice").value||.92;
-  if(document.getElementById("solar").checked) kwh*=0.35;
-  return {kmMonth,kmYear:kmMonth*12,gas,kwh,years:+document.getElementById("years").value||5};
+function sync(){
+ choices.forEach((id,i)=>{const c=cars.find(x=>x.id===id);document.getElementById(`car${i+1}Name`).textContent=c.name;document.getElementById(`car${i+1}Type`).textContent=`2026 · ${c.type}`});
 }
-
-function calc(car,p){
-  const energyMonth=car.fuelType==="kwh" ? p.kmMonth*car.efficiency*p.kwh : p.kmMonth/car.efficiency*p.gas;
-  const energyYear=energyMonth*12;
-  const maintenance=car.maintenance;
-  const insurance=car.insurance;
-  const ipva=car.price*car.ipvaRate;
-  const totalYear=energyYear+maintenance+insurance+ipva;
-  const total=totalYear*p.years + car.price*car.depreciation;
-  return {energyMonth,energyYear,maintenance,insurance,ipva,totalYear,total,costKm:total/(p.kmYear*p.years),autonomy:car.autonomy};
+document.getElementById("addCar").onclick=()=>alert("Na próxima versão: comparação de até 4 carros. A interface já está preparada para isso.");
+function calculate(){
+ const km=+document.getElementById("km").value||15000,gas=+document.getElementById("gas").value||6.19,kwh=+document.getElementById("kwh").value||.89,solar=document.getElementById("solar").value==="Sim";
+ const energy=solar?kwh*.35:kwh;
+ const rs=choices.map(id=>{const c=cars.find(x=>x.id===id);const monthly=c.kind==="kwh"?km/12*c.eff*energy:km/12/c.eff*gas;return {c,monthly,year:monthly*12,km:monthly*12/km}});
+ const low=Math.min(...rs.map(x=>x.year));
+ document.getElementById("result").innerHTML=rs.map(r=>`<div class="result-box"><div><span class="eyebrow">${r.c.type}</span><h3>${r.c.name}</h3></div><strong>${money2(r.km)}/km</strong><p>Energia/combustível: <b>${money(r.monthly)}/mês</b> · <b>${money(r.year)}/ano</b></p>${r.year===low?'<em>Menor custo de energia no cenário</em>':''}</div>`).join("")+`<small class="demo-note">Protótipo: estes valores são demonstrativos. Na produção, cada dado terá fonte e data de atualização.</small>`;
 }
-
-function renderResults(){
-  const p=profile();
-  document.getElementById("kmYearPreview").textContent=number(p.kmYear);
-  const results=selected.map(id=>{
-    const car=vehicles.find(v=>v.id===id); return {car,...calc(car,p)};
-  });
-  const min=Math.min(...results.map(r=>r.total));
-  const maxEnergy=Math.max(...results.map(r=>r.energyMonth));
-  document.getElementById("resultContext").textContent=`${number(p.kmYear)} km/ano · ${p.years} anos · ${p.kwh<0.5?"solar considerada":"energia conforme tarifa informada"}`;
-  document.getElementById("resultGrid").innerHTML=results.map(r=>{
-    const pct=maxEnergy?Math.max(8,r.energyMonth/maxEnergy*100):10;
-    const winner=r.total===min;
-    const breakText = winner ? "Menor custo total no cenário informado." : `Diferença para a opção mais econômica: ${money(r.total-min)}.`;
-    return `<article class="result-card ${winner?"winner":""}">
-      <div class="result-top">
-        <div><div class="result-name">${r.car.name}</div><div class="result-type">${r.car.version}</div></div>
-        ${winner?'<span class="winner-badge">Menor TCO</span>':""}
-      </div>
-      <div class="cost-main"><span>Custo total estimado</span><strong>${money(r.total)}</strong><small>em ${p.years} anos</small></div>
-      <div class="metrics">
-        <div class="metric"><span>Por km</span><strong>${money2(r.costKm)}</strong></div>
-        <div class="metric"><span>Energia / mês</span><strong>${money(r.energyMonth)}</strong></div>
-        <div class="metric"><span>Manutenção / ano</span><strong>${money(r.maintenance)}</strong></div>
-      </div>
-      <div class="cost-bars">
-        <div class="bar-row"><span>Energia</span><div class="bar"><i style="width:${pct}%"></i></div><b>${money(r.energyYear)}/ano</b></div>
-        <div class="bar-row"><span>IPVA</span><div class="bar"><i style="width:${Math.min(100,r.ipva/Math.max(...results.map(x=>x.ipva))*100)}%"></i></div><b>${money(r.ipva)}</b></div>
-        <div class="bar-row"><span>Seguro</span><div class="bar"><i style="width:${Math.min(100,r.insurance/Math.max(...results.map(x=>x.insurance))*100)}%"></i></div><b>${money(r.insurance)}</b></div>
-      </div>
-      <div class="break-even">${breakText}</div>
-    </article>`;
-  }).join("") + `<p class="result-note">Protótipo: preços, manutenção, seguro, depreciação e IPVA são valores demonstrativos. A versão de produção deve consumir a base oficial e exibir fonte/data de cada dado.</p>`;
-}
-
-document.getElementById("compareBtn").addEventListener("click",()=>{
-  renderResults();
-  document.getElementById("resultado").scrollIntoView({behavior:"smooth",block:"start"});
-});
-["kmMonth","gasPrice","kwhPrice","solar","years"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{
-  document.getElementById("kmYearPreview").textContent=number((+document.getElementById("kmMonth").value||1500)*12);
-}));
-renderSlots();
+document.getElementById("compareNow").onclick=()=>{calculate();document.getElementById("result").scrollIntoView({behavior:"smooth",block:"nearest"})};
+fill();
