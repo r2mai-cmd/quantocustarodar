@@ -128,7 +128,24 @@ window.__qcrAddCar=addCarSlot;
 const addCarButton=$('#addCar'); if(addCarButton){addCarButton.addEventListener('click',addCarSlot);}
 document.addEventListener('click',e=>{const select=e.target.closest('[data-select]');if(select){openPicker(Number(select.dataset.select));return;}const pick=e.target.closest('[data-pick]');if(pick){slots[activeSlot]=pick.dataset.pick;closePicker();renderAll();requestAnimationFrame(()=>document.querySelector(`[data-slot="${activeSlot}"]`)?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}));const v=VEHICLES.find(x=>x.id===pick.dataset.pick);if(v){resolveVehicleImage(v).then(()=>renderCars());}return;}const remove=e.target.closest('[data-remove]');if(remove){const index=Number(remove.dataset.remove);slots.splice(index,1);if(slots.length<2)slots.push(null);renderAll();return;}const spec=e.target.closest('[data-spec]');if(spec){openDrawer(spec.dataset.spec);return;}if(e.target.closest('[data-add-car]')){addCarSlot();return;}});
 $('#recalculate').addEventListener('click',table);
-$('#showAllSpecs').addEventListener('click',()=>{const first=slots.find(Boolean);if(first)openDrawer(first);});
+function openAllSpecs(){
+  const selected=slots.map(id=>id?VEHICLES.find(x=>x.id===id):null).filter(Boolean);
+  if(!selected.length)return;
+  const blocks=selected.map(v=>{
+    const rows=[
+      ['Marca',v.brand],['Modelo',v.model],['Versão',v.version||'—'],['Categoria',v.category||'—'],
+      ['Propulsão',v.type||'—'],['Combustível',v.fuel||'—'],['Motor',v.motor||'—'],['Câmbio',v.transmission||'—'],
+      ['Consumo cidade',Number.isFinite(v.gasCity)?`${v.gasCity.toFixed(1).replace('.',',')} km/l`:Number.isFinite(v.kwhPerKm)?`${(v.kwhPerKm*100).toFixed(1).replace('.',',')} kWh/100 km`:'—'],
+      ['Consumo estrada',Number.isFinite(v.gasRoad)?`${v.gasRoad.toFixed(1).replace('.',',')} km/l`:Number.isFinite(v.kwhPerKm)?`${(v.kwhPerKm*100).toFixed(1).replace('.',',')} kWh/100 km`:'—'],
+      ['Autonomia (PBEV)',Number.isFinite(v.autonomy)?`${v.autonomy.toLocaleString('pt-BR')} km`:'—']
+    ];
+    return `<article class="all-spec-card"><div class="all-spec-photo">${photoMarkup(v,'drawer-photo')}</div><div class="all-spec-title"><div><p class="eyebrow">PBEV 2026</p><h3>${esc(carName(v))}</h3><span>${esc(v.version||'Versão conforme cadastro do Inmetro')}</span></div><button class="mini-spec" type="button" data-spec="${esc(v.id)}">Abrir ficha</button></div><div class="all-spec-grid">${rows.map(r=>`<div><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join('')}</div></article>`;
+  }).join('');
+  $('#drawerContent').innerHTML=`<p class="eyebrow">ESPECIFICAÇÕES DOS CARROS</p><h2>Ficha técnica completa</h2><p class="drawer-sub">Todos os veículos selecionados nesta comparação.</p><div class="all-specs-list">${blocks}</div><p class="drawer-source">Fonte dos dados técnicos: <a href="${PBEV_SOURCE_URL}" target="_blank" rel="noopener">INMETRO / PBEV 2026</a>. Os valores de consumo são padronizados e podem variar em uso real.</p>`;
+  $('#drawerBackdrop').hidden=false;requestAnimationFrame(()=>$('#specDrawer').classList.add('open'));$('#specDrawer').setAttribute('aria-hidden','false');
+  selected.forEach(v=>resolveVehicleImage(v).then(()=>{const card=$(`#drawerContent [data-spec="${CSS.escape(v.id)}"]`)?.closest('.all-spec-card');if(card)card.querySelector('.all-spec-photo').innerHTML=photoMarkup(v,'drawer-photo');}));
+}
+$('#showAllSpecs').addEventListener('click',openAllSpecs);
 $('#pickerClose').addEventListener('click',closePicker);$('#pickerBackdrop').addEventListener('click',closePicker);$('#pickerSearch').addEventListener('input',e=>renderPicker(e.target.value));
 $('#drawerClose').addEventListener('click',closeDrawer);$('#drawerBackdrop').addEventListener('click',closeDrawer);document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePicker();closeDrawer();}});
 ['#kmMonth','#state','#solar'].forEach(sel=>$(sel).addEventListener('input',()=>{if(sel==='#solar')$('#solarHint').textContent=$('#solar').checked?'custo considerado: R$ 0,00/kWh':'considera R$ 0,00/kWh';table();}));

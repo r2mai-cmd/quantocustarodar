@@ -153,3 +153,68 @@
   .table-head-row,.table-row{grid-template-columns:var(--label-col) repeat(var(--car-count,2),var(--mobile-car-col))!important;min-width:calc(29% + var(--car-count,2) * var(--mobile-car-col))!important}
   .table-head-row>div,.table-row>div{overflow-wrap:anywhere}
 }
+
+/* V9 — refinamento visual, tabela legível e ficha completa */
+.site-header{
+  height:78px;
+  padding:0 28px;
+  background:linear-gradient(180deg,#ffffff 0%,#fbfdfc 100%);
+  border-bottom:1px solid #e4ece8;
+  box-shadow:0 4px 18px rgba(16,36,61,.045);
+}
+.brand{gap:13px;min-width:340px}
+.brand img{width:58px;height:45px;filter:drop-shadow(0 3px 5px rgba(16,36,61,.08))}
+.brand-copy strong{font-size:21px;letter-spacing:-.75px}
+.brand-copy small{font-size:9px;color:#0b8b48;letter-spacing:1px}
+.main-nav{gap:10px}
+.main-nav a{height:38px;padding:0 12px;border-radius:20px}
+.main-nav a.active{background:#eaf8f0;color:#087b3d}
+.main-nav a.active:after{display:none}
+.search-button{background:#f7faf9;border-color:#dce8e1}
+.section-head{margin-bottom:18px}
+.section-head h1{font-size:34px}
+
+/* A tabela de 2 carros cabe inteira no celular; valores quebram em linhas em vez de criar uma tabela maior que a tela. */
+.comparison-table{width:100%;overflow:hidden}
+.table-scroll{width:100%;overflow:hidden}
+.table-head-row,.table-row{width:100%;grid-template-columns:30% repeat(var(--car-count,2),minmax(0,1fr))!important;min-width:0!important}
+.table-head-row>div,.table-row>div{font-size:12px;padding:10px 9px;line-height:1.35;overflow-wrap:anywhere;word-break:normal}
+.table-head-row>div{font-size:12px;line-height:1.25}
+.table-row>div:first-child{font-size:11.5px}
+.group-row>div{font-size:11px;padding-top:9px;padding-bottom:9px}
+.table-actions{padding:16px 0}
+.secondary-button{font-size:12px;padding:11px 20px}
+
+.all-specs-list{display:grid;gap:18px;margin-top:16px}
+.all-spec-card{border:1px solid #dfe9e4;border-radius:14px;padding:14px;background:#fff}
+.all-spec-photo{height:145px;border-radius:11px;overflow:hidden;background:#f4f7f7}
+.all-spec-photo .drawer-photo{height:145px;margin:0;border-radius:0}
+.all-spec-title{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:12px 0 8px}
+.all-spec-title h3{margin:0;font-size:19px;color:var(--ink)}
+.all-spec-title span{font-size:10px;color:#718092}
+.mini-spec{border:1px solid #cfe1d7;background:#f2faf5;color:#087b3d;border-radius:8px;padding:8px 10px;font-size:10px;font-weight:800;white-space:nowrap}
+.all-spec-grid{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #edf1ef}
+.all-spec-grid>div{padding:8px 5px;border-bottom:1px solid #edf1ef;display:flex;justify-content:space-between;gap:10px;font-size:10px}
+.all-spec-grid span{color:#68737d}.all-spec-grid b{text-align:right;color:var(--ink);overflow-wrap:anywhere}
+
+@media(max-width:720px){
+  .site-header{height:64px;padding:0 13px}
+  .brand{min-width:0;gap:9px}
+  .brand img{width:46px;height:37px}
+  .brand-copy strong{font-size:16px;letter-spacing:-.5px}
+  .brand-copy small{display:block;font-size:7px;letter-spacing:.7px}
+  .search-button{display:grid;margin-left:auto;width:36px;height:36px;font-size:19px}
+  .section-head h1{font-size:25px}
+  .comparison-table{overflow:hidden}
+  .table-scroll{overflow:hidden}
+  .table-head-row,.table-row{grid-template-columns:30% repeat(var(--car-count,2),minmax(0,1fr))!important;min-width:0!important}
+  .table-head-row>div,.table-row>div{font-size:10.5px;padding:9px 5px;line-height:1.35;overflow-wrap:anywhere}
+  .table-head-row>div{font-size:10.5px}
+  .table-row>div:first-child{font-size:10px}
+  .group-row>div{font-size:10px;padding:9px 5px}
+  .empty-value{font-size:10.5px!important}
+  .all-spec-card{padding:11px}
+  .all-spec-photo,.all-spec-photo .drawer-photo{height:115px}
+  .all-spec-title h3{font-size:16px}
+  .all-spec-grid>div{font-size:9.5px;padding:7px 3px}
+}
