@@ -1,24 +1,20 @@
 # Quanto Custa Rodar?
 
-Site estático para `https://quantocustarodar.com.br/`.
+Site estático para comparar o custo de uso de carros.
 
-## O que esta versão faz
-- Interface de comparação lado a lado para até 4 veículos.
-- Carrega a base PBEV 2026 em CSV no navegador.
-- Usa consumo/autonomia do PBEV para calcular custo por km e gasto mensal/anual de energia/combustível.
-- Permite preço de gasolina, etanol, energia, energia solar, estado e km/mês.
-- Abre uma ficha técnica lateral com os dados disponíveis no PBEV.
-- Mostra um veredito de menor custo calculável e ponto de equilíbrio quando existem custos fixos comparáveis.
+## Esta versão
+- Começa com exatamente 2 espaços de comparação vazios.
+- O usuário escolhe cada carro por uma busca amigável para celular.
+- Permite adicionar até 4 carros.
+- No celular, os dois carros iniciais cabem lado a lado sem exigir rolagem horizontal para descobri-los.
+- A tabela usa as colunas dos dois carros e não inicia com veículos pré-selecionados.
+- Ficha técnica abre em painel lateral; no celular ocupa a tela inteira.
+- Consumo/autonomia são carregados do PBEV 2026.
 
-## Fontes
-- INMETRO PBEV 2026: https://www.gov.br/inmetro/pt-br/assuntos/regulamentacao/avaliacao-da-conformidade/programa-brasileiro-de-etiquetagem/tabelas-de-eficiencia-energetica/veiculos-automotivos-pbe-veicular
-- FIPE: https://www.fipe.org.br/pt-br/indices/veiculos
-- Portal IPVA RS: https://www.ipva.rs.gov.br/
+## Fonte PBEV
+A interface carrega a base pública usada no protótipo e identifica os dados como INMETRO/PBEV 2026. A página oficial do Inmetro informa que a tabela de veículos leves 2026 é o 18º ciclo e foi atualizada em 31/08/2026.
 
-A página **não inventa** preço FIPE, manutenção, seguro ou depreciação. Esses dados precisam ser integrados por fontes próprias antes de aparecerem como fatos no TCO.
-
-## Observação sobre a base PBEV
-O arquivo carregado pelo front-end é um CSV público derivado da tabela PBEV 2026. O site sempre aponta a página oficial do Inmetro como fonte primária. A tabela oficial pode receber atualizações; a quantidade de registros carregada pelo navegador é exibida na interface.
+Fonte oficial: https://www.gov.br/inmetro/pt-br/assuntos/regulamentacao/avaliacao-da-conformidade/programa-brasileiro-de-etiquetagem/tabelas-de-eficiencia-energetica/veiculos-automotivos-pbe-veicular
 
 ## Publicação
-Suba `index.html`, `styles.css`, `app.js`, `logo.svg`, `hero-car.svg` e `.nojekyll` no root da branch `main` do GitHub Pages.
+Para GitHub Pages, mantenha `index.html`, `styles.css`, `app.js`, `logo.svg`, `hero-car.svg` e `.nojekyll` na raiz da fonte publicada.
