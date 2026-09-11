@@ -9,3 +9,9 @@ Os cards procuram fotos reais de veículos no Wikimedia Commons. Para modelos co
 Quando a foto tem licença que exige atribuição, a ficha técnica exibe a origem/crédito.
 
 Fonte técnica dos dados de consumo/autonomia: Inmetro PBEV 2026.
+
+
+## V10
+- Fotos dos veículos preservam a proporção original e não são cortadas por CSS.
+- Foto específica do Fiat 500e ICON adicionada.
+- Cache de fotos versionado como v10.

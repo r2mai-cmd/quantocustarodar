@@ -5,7 +5,8 @@ const KNOWN_IMAGES = [
   {test: v => /dolphin\s*mini|seagull/i.test(carName(v)), file:'BYD_DOLPHIN_MINI_(BRAZIL)_BYD_SEAGULL.jpg', credit:'Mateusmatsuda'},
   {test: v => /civic/i.test(carName(v)) && /e:?hev|hybrid/i.test(`${v.model} ${v.version}`), file:'Honda_CIVIC_e-HEV_(6AA-FL4)_front.jpg', credit:'Tokumeigakarinoaoshima'},
   {test: v => /dolphin/i.test(carName(v)), file:'2024_BYD_Dolphin.jpg', credit:'RL GNZLZ'},
-  {test: v => /pulse/i.test(carName(v)), file:'2022_Fiat_Pulse_1.3_GSE_Drive.jpg', credit:'Morio'},
+  {test: v => /pulse/i.test(carName(v)), file:'2022_Fiat_Pulse_1.3_GSE_Drive.jpg', credit:'Just a Man'},
+  {test: v => /500e/i.test(carName(v)), file:'FIAT_500e_ICON_(ZAA-FA1)_front.jpg', credit:'Tokumeigakarinoaoshima'},
   {test: v => /corolla/i.test(carName(v)), file:'Toyota_Corolla_sedan_E210_hydrid.jpg', credit:''}
 ];
 function knownImage(v){const hit=KNOWN_IMAGES.find(x=>x.test(v));return hit?{imageUrl:`https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/${encodeURIComponent(hit.file)}&width=700`,imageSource:`https://commons.wikimedia.org/wiki/File:${encodeURIComponent(hit.file)}`,imageCredit:hit.credit}:null;}
@@ -113,7 +114,7 @@ function closeDrawer(){$('#specDrawer').classList.remove('open');$('#specDrawer'
 function parseMoney(value){const s=String(value??'').trim();if(!s)return 0;return Number(s.replace(/\./g,'').replace(',','.'))||0;}
 function formatCentsInput(el){const digits=el.value.replace(/\D/g,'').slice(0,7);if(!digits){el.value='';return;}const cents=Math.max(1,parseInt(digits,10));el.value=(cents/100).toFixed(2).replace('.',',');}
 function initMoneyInputs(){document.querySelectorAll('.money-input').forEach(el=>{el.addEventListener('input',()=>{formatCentsInput(el);table();});el.addEventListener('focus',()=>{el.select();});el.addEventListener('blur',()=>{if(el.value)formatCentsInput(el);});});}
-function cacheKey(v){return `qcr-photo-v8:${carName(v).toLowerCase()}`;}
+function cacheKey(v){return `qcr-photo-v10:${carName(v).toLowerCase()}`;}
 async function resolveVehicleImage(v){if(!v)return null;if(v.imageUrl)return v.imageUrl;if(imageCache.has(v.id)){Object.assign(v,imageCache.get(v.id));return v.imageUrl;}try{const cached=localStorage.getItem(cacheKey(v));if(cached){Object.assign(v,JSON.parse(cached));imageCache.set(v.id,JSON.parse(cached));return v.imageUrl;}}catch(_){ }
   const known=knownImage(v); if(known){Object.assign(v,known);imageCache.set(v.id,known);try{localStorage.setItem(cacheKey(v),JSON.stringify(known));}catch(_){ }return v.imageUrl;}
   const q=encodeURIComponent(`${v.brand} ${v.model} automobile`);

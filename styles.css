@@ -218,3 +218,14 @@
   .all-spec-title h3{font-size:16px}
   .all-spec-grid>div{font-size:9.5px;padding:7px 3px}
 }
+
+
+/* V10 — fotos sempre inteiras, sem corte */
+.car-photo, .drawer-photo, .all-spec-photo { display:flex !important; align-items:center !important; justify-content:center !important; overflow:hidden !important; }
+.car-photo img, .drawer-photo img, .all-spec-photo img { display:block !important; width:auto !important; height:auto !important; max-width:100% !important; max-height:100% !important; object-fit:contain !important; padding:0 !important; flex:0 1 auto !important; }
+.car-photo { min-height:132px; height:132px; }
+.drawer-photo { min-height:210px; height:210px; }
+.all-spec-photo { min-height:185px; height:185px; }
+.all-spec-photo .drawer-photo { min-height:185px; height:185px; width:100%; }
+@media(max-width:720px){ .car-photo { min-height:100px; height:100px; } .drawer-photo { min-height:190px; height:190px; } .all-spec-photo, .all-spec-photo .drawer-photo { min-height:175px; height:175px; } }
+@media(max-width:480px){ .all-spec-photo, .all-spec-photo .drawer-photo { min-height:165px; height:165px; } }
