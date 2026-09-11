@@ -1,13 +1,18 @@
-# Quanto Custa Rodar? — V2
+# Quanto Custa Rodar? — layout final
 
-Template azul com calculadora disponível já no primeiro scroll.
+Versão refeita seguindo a referência visual enviada pelo projeto.
 
-## Atenção sobre imagens e marcas
+### Correções
+- Layout desktop e mobile reorganizado para evitar sobreposição.
+- Calculadora começa no hero, sem obrigar o usuário a navegar para outra seção.
+- Até 4 carros.
+- "Comparação avançada" abre os campos de perfil.
+- Resultado funcional no próprio site.
+- Logo próprio com carro + gota de combustível + raio.
+- Hero usa uma ilustração genérica, sem logotipos de montadoras.
+- `.nojekyll` incluído para publicação estática.
 
-As imagens do hero desta versão são ilustrações genéricas e **não reproduzem marcas ou modelos específicos**. Para a versão de produção, prefira fotos/ativos com licença adequada, banco de imagens, material de imprensa autorizado ou assets fornecidos pelos fabricantes.
+### Publicação
+Suba os arquivos na raiz do branch `main` e mantenha GitHub Pages em `main` + `/(root)`.
 
-Os nomes de fabricantes/modelos podem ser usados de forma descritiva em comparações, mas o site não deve sugerir patrocínio, parceria ou endosso sem autorização.
-
-## Próximo passo
-
-Substituir os dados demonstrativos por uma base estruturada do PBE Veicular/Inmetro e demais fontes, sempre mostrando fonte e data.
+Os dados de veículos são demonstrativos neste protótipo. Antes de publicar como calculadora factual, substituir por dados reais com fonte e data.

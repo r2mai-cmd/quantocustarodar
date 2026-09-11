@@ -1,30 +1,71 @@
-const cars=[
-{id:"dolphin",name:"Elétrico compacto",type:"Elétrico",eff:.145,kind:"kwh"},
-{id:"hybrid",name:"Híbrido médio",type:"Híbrido",eff:14.2,kind:"gas"},
-{id:"flex",name:"Flex compacto",type:"Combustão",eff:12.5,kind:"gas"},
-{id:"sedan",name:"Sedã eficiente",type:"Combustão",eff:13.5,kind:"gas"}
+const VEHICLES = [
+  {id:"dolphin",name:"BYD Dolphin",year:2026,type:"Elétrico",energy:"kwh",consumption:.145,maintenance:2100,insurance:4200,price:149800,ipva:.02},
+  {id:"corolla",name:"Toyota Corolla",year:2026,type:"Híbrido",energy:"gas",consumption:17.9,maintenance:3200,insurance:3900,price:184990,ipva:.03},
+  {id:"h6",name:"GWM Haval H6",year:2026,type:"Híbrido",energy:"gas",consumption:14.2,maintenance:3300,insurance:5100,price:219000,ipva:.025},
+  {id:"polo",name:"VW Polo",year:2026,type:"Combustão",energy:"gas",consumption:13.5,maintenance:2700,insurance:3500,price:95000,ipva:.03},
+  {id:"corollaCross",name:"Toyota Corolla Cross",year:2026,type:"Híbrido",energy:"gas",consumption:16.0,maintenance:3500,insurance:4400,price:205000,ipva:.03},
+  {id:"ora",name:"GWM Ora 03",year:2026,type:"Elétrico",energy:"kwh",consumption:.165,maintenance:2300,insurance:4300,price:169000,ipva:.02}
 ];
-let choices=[cars[0].id,cars[2].id];
+
+let selected=["dolphin","polo"];
+const $=s=>document.querySelector(s);
 const money=v=>v.toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0});
 const money2=v=>v.toLocaleString("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:2,maximumFractionDigits:2});
-function fill(){
- for(const id of ["car1","car2"]){
-  const s=document.getElementById(id);const idx=id==="car1"?0:1;
-  s.innerHTML=cars.map(c=>`<option value="${c.id}" ${c.id===choices[idx]?"selected":""}>${c.name}</option>`).join("");
-  s.onchange=e=>{choices[idx]=e.target.value;sync()};
- }
- sync();
+
+function fieldHTML(index){
+  const c=VEHICLES.find(v=>v.id===selected[index]);
+  return `<div class="car-field">
+    <label>Carro ${index+1}${index>1?' <span style="font-weight:500;color:#82909d">(opcional)</span>':''}</label>
+    <select class="car-select" data-index="${index}" aria-label="Selecionar carro ${index+1}">
+      ${VEHICLES.map(v=>`<option value="${v.id}" ${v.id===c.id?"selected":""}>${v.name} — ${v.year} · ${v.type}</option>`).join("")}
+    </select>
+  </div>`;
 }
-function sync(){
- choices.forEach((id,i)=>{const c=cars.find(x=>x.id===id);document.getElementById(`car${i+1}Name`).textContent=c.name;document.getElementById(`car${i+1}Type`).textContent=`2026 · ${c.type}`});
+function renderFields(){
+  $("#carFields").innerHTML=selected.map((_,i)=>fieldHTML(i)).join("");
+  document.querySelectorAll(".car-select").forEach(s=>s.addEventListener("change",e=>{
+    selected[+e.target.dataset.index]=e.target.value; renderFields();
+  }));
+  $("#addCar").style.display=selected.length>=4?"none":"flex";
 }
-document.getElementById("addCar").onclick=()=>alert("Na próxima versão: comparação de até 4 carros. A interface já está preparada para isso.");
-function calculate(){
- const km=+document.getElementById("km").value||15000,gas=+document.getElementById("gas").value||6.19,kwh=+document.getElementById("kwh").value||.89,solar=document.getElementById("solar").value==="Sim";
- const energy=solar?kwh*.35:kwh;
- const rs=choices.map(id=>{const c=cars.find(x=>x.id===id);const monthly=c.kind==="kwh"?km/12*c.eff*energy:km/12/c.eff*gas;return {c,monthly,year:monthly*12,km:monthly*12/km}});
- const low=Math.min(...rs.map(x=>x.year));
- document.getElementById("result").innerHTML=rs.map(r=>`<div class="result-box"><div><span class="eyebrow">${r.c.type}</span><h3>${r.c.name}</h3></div><strong>${money2(r.km)}/km</strong><p>Energia/combustível: <b>${money(r.monthly)}/mês</b> · <b>${money(r.year)}/ano</b></p>${r.year===low?'<em>Menor custo de energia no cenário</em>':''}</div>`).join("")+`<small class="demo-note">Protótipo: estes valores são demonstrativos. Na produção, cada dado terá fonte e data de atualização.</small>`;
+$("#addCar").addEventListener("click",()=>{
+  const next=VEHICLES.find(v=>!selected.includes(v.id));
+  if(next){selected.push(next.id);renderFields();}
+});
+$("#advancedToggle").addEventListener("click",()=>{
+  const p=$("#advancedPanel"); p.hidden=!p.hidden; $("#advancedToggle span").textContent=p.hidden?"⌄":"⌃";
+});
+
+function calc(v){
+  const km=Number($("#kmMonth").value)||1250;
+  const gas=Number($("#gasPrice").value)||6.19;
+  let kwh=Number($("#kwhPrice").value)||.89;
+  if($("#solar").value==="yes") kwh*=.35;
+  const monthly=v.energy==="kwh" ? km*v.consumption*kwh : km/v.consumption*gas;
+  const annual=monthly*12;
+  const years=Number($("#years").value)||5;
+  const fixed=(v.maintenance+v.insurance+(v.price*v.ipva))*years;
+  const total=annual*years+fixed;
+  return {monthly,annual,total,costKm:total/(km*12*years)};
 }
-document.getElementById("compareNow").onclick=()=>{calculate();document.getElementById("result").scrollIntoView({behavior:"smooth",block:"nearest"})};
-fill();
+function compare(){
+  const rows=selected.map(id=>{const v=VEHICLES.find(x=>x.id===id);return {v,...calc(v)}});
+  const min=Math.min(...rows.map(r=>r.total));
+  $("#resultArea").innerHTML=`<div class="result-grid">${rows.map(r=>`
+    <article class="result-card ${r.total===min?"winner":""}">
+      <span class="eyebrow">${r.v.type.toUpperCase()}</span>
+      <h3>${r.v.name}</h3><span class="type">${r.v.year} · estimativa de protótipo</span>
+      <div class="result-cost">${money(r.total)}</div>
+      <div class="result-meta">custo total estimado em ${$("#years").value} anos</div>
+      ${r.total===min?'<span class="result-badge">MENOR CUSTO NO CENÁRIO</span>':""}
+      <div class="result-foot">
+        <div><span>Por km</span><b>${money2(r.costKm)}</b></div>
+        <div><span>Por mês</span><b>${money(r.monthly)}</b></div>
+        <div><span>Por ano</span><b>${money(r.annual)}</b></div>
+      </div>
+    </article>`).join("")}</div>
+    <p style="font-size:10px;color:#82909d;margin-top:12px">Protótipo: valores de manutenção, seguro, preço e IPVA são demonstrativos. Na versão de produção, cada dado terá fonte e data de atualização.</p>`;
+  $("#resultArea").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+$("#compareButton").addEventListener("click",compare);
+renderFields();
