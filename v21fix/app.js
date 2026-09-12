@@ -121,20 +121,7 @@ function parseFipePrice(s){const n=String(s??'').replace(/[^0-9,]/g,'').replace(
 function avg(a,b){return Number.isFinite(a)&&Number.isFinite(b)?a*.55+b*.45:(a??b);}
 function isElectric(v){return /el[eé]tr/i.test(v.type)||/el[eé]tr/i.test(v.fuel)||Number.isFinite(v.kwhPerKm)&&!Number.isFinite(v.gasCity);}
 function profile(){const km=num($('#kmMonth').value)||0,gas=parseMoney($('#gasPrice').value),eth=parseMoney($('#ethPrice').value),kwh=parseMoney($('#kwhPrice').value);return{km,gas,eth,kwh:$('#solar').checked?0:kwh,annualKm:km*12};}
-function energy(v,p){
-  if(isElectric(v)&&Number.isFinite(v.kwhPerKm)) return {costKm:v.kwhPerKm*p.kwh,kind:'eletricidade',detail:`${(v.kwhPerKm*100).toFixed(1).replace('.',',')} kWh/100 km × ${money2(p.kwh)}/kWh`};
-  const g=avg(v.gasCity,v.gasRoad), e=avg(v.ethCity,v.ethRoad), fuel=normalizeSearch(v?.fuel||'');
-  // Para veículos flex, o custo principal usa GASOLINA. Isso mantém a conta coerente
-  // com as linhas de consumo exibidas na tabela e evita trocar silenciosamente de combustível.
-  // Etanol é usado somente quando o veículo é exclusivamente etanol ou não há dado de gasolina.
-  if((fuel==='f'||fuel.includes('flex')||fuel==='g'||fuel.includes('gasolina')) && Number.isFinite(g) && p.gas>0)
-    return {costKm:p.gas/g,kind:'gasolina',detail:`${g.toFixed(1).replace('.',',')} km/l × ${money2(p.gas)}/l · gasolina${fuel==='f'||fuel.includes('flex')?' (referência do flex)':''}`};
-  if((fuel==='a'||fuel.includes('etanol')||!Number.isFinite(g)) && Number.isFinite(e) && p.eth>0)
-    return {costKm:p.eth/e,kind:'etanol',detail:`${e.toFixed(1).replace('.',',')} km/l × ${money2(p.eth)}/l · etanol`};
-  if(Number.isFinite(g)&&p.gas>0) return {costKm:p.gas/g,kind:'gasolina',detail:`${g.toFixed(1).replace('.',',')} km/l × ${money2(p.gas)}/l · gasolina`};
-  if(Number.isFinite(e)&&p.eth>0) return {costKm:p.eth/e,kind:'etanol',detail:`${e.toFixed(1).replace('.',',')} km/l × ${money2(p.eth)}/l · etanol`};
-  return {kind:'combustível',costKm:null,detail:'Informe os preços de combustível'};
-}
+function energy(v,p){if(isElectric(v)&&Number.isFinite(v.kwhPerKm))return{costKm:v.kwhPerKm*p.kwh,kind:'eletricidade',detail:`${(v.kwhPerKm*100).toFixed(1).replace('.',',')} kWh/100 km`};const g=avg(v.gasCity,v.gasRoad),e=avg(v.ethCity,v.ethRoad),options=[];if(Number.isFinite(g)&&p.gas>0)options.push({kind:'gasolina',costKm:p.gas/g,detail:`${g.toFixed(1).replace('.',',')} km/l · gasolina`});if(Number.isFinite(e)&&p.eth>0)options.push({kind:'etanol',costKm:p.eth/e,detail:`${e.toFixed(1).replace('.',',')} km/l · etanol`});return options.length?options.sort((a,b)=>a.costKm-b.costKm)[0]:{kind:'combustível',costKm:null,detail:'Informe os preços de combustível'};}
 function calc(v,p){const e=energy(v,p),energyAnnual=Number.isFinite(e.costKm)?e.costKm*p.annualKm:null;return{e,energyAnnual,annual:null,costKm:e.costKm};}
 function photoMarkup(v, cls='car-photo'){
   const fallback=`<div class="car-placeholder" aria-hidden="true">🚗</div>`;
@@ -145,7 +132,7 @@ function slotCard(i){const id=slots[i],v=id?VEHICLES.find(x=>x.id===id):null;ret
 function renderCars(){const host=$('#carColumns');host.innerHTML=slots.map((_,i)=>slotCard(i)).join('');$('#compareGrid').style.setProperty('--car-count',slots.length);$('#compareGrid').style.setProperty('--car-min',slots.length>2?'210px':'0px');const add=$('#addCar');add.disabled=slots.length>=4;add.style.display=slots.length>=4?'none':'flex';const selected=slots.map(id=>id?VEHICLES.find(x=>x.id===id):null).filter(Boolean);selected.forEach(v=>loadFipePrice(v));}
 function searchVehicles(q){const s=normalizeSearch(q);if(!s){return [...VEHICLES].sort((a,b)=>(b.sourceYear||0)-(a.sourceYear||0)).slice(0,40);}return VEHICLES.filter(v=>normalizeSearch(`${v.brand} ${v.model} ${v.version} ${v.sourceYear||''}`).includes(s)).sort((a,b)=>(b.sourceYear||0)-(a.sourceYear||0)).slice(0,80);}
 function pickerThumb(v){return v.imageUrl?`<img src="${esc(v.imageUrl)}" alt="" loading="lazy">`:'<span class="picker-car">🚗</span>';}
-function renderPicker(q=''){const list=searchVehicles(q),host=$('#pickerResults');if(!list.length){host.innerHTML='<div class="no-results"><b>Nenhum veículo encontrado na base PBEV carregada.</b><span>Modelos mais antigos podem estar nos ciclos históricos do PBEV mantidos pelo Inmetro (2009–2025).</span><a href="https://www.gov.br/inmetro/pt-br/assuntos/regulamentacao/avaliacao-da-conformidade/programa-brasileiro-de-etiquetagem/tabelas-de-eficiencia-energetica/veiculos-automotivos-pbe-veicular" target="_blank" rel="noopener">Consultar histórico do Inmetro →</a></div>';return;}host.innerHTML=list.map(v=>`<button class="picker-item" data-pick="${esc(v.id)}"><span class="picker-thumb">${pickerThumb(v)}</span><span><b>${esc(carFullName(v))}</b><small>${esc(v.type||'Propulsão não informada')} · ${cycleLabel(v)}</small></span><span class="picker-arrow">›</span></button>`).join('');hydratePickerImages(list.slice(0,12));}
+function renderPicker(q=''){const list=searchVehicles(q),host=$('#pickerResults');if(!list.length){host.innerHTML='<div class="no-results"><b>Nenhum veículo encontrado na base PBEV carregada.</b><span>Modelos mais antigos podem estar nos ciclos históricos do PBEV mantidos pelo Inmetro (2009–2025).</span><a href="https://www.gov.br/inmetro/pt-br/assuntos/regulamentacao/avaliacao-da-conformidade/programa-brasileiro-de-etiquetagem/tabelas-de-eficiencia-energetica/veiculos-automotivos-pbe-veicular" target="_blank" rel="noopener">Consultar histórico do Inmetro →</a></div>';return;}host.innerHTML=list.map(v=>`<button class="picker-item" data-pick="${esc(v.id)}"><span class="picker-thumb">${pickerThumb(v)}</span><span><b>${esc(carFullName(v))}</b><small>${esc(v.type||'Propulsão não informada')} · PBEV 2026</small></span><span class="picker-arrow">›</span></button>`).join('');hydratePickerImages(list.slice(0,12));}
 async function hydratePickerImages(list){await Promise.all(list.map(v=>resolveVehicleImage(v)));const host=$('#pickerResults');if(!host)return;list.forEach(v=>{const item=host.querySelector(`[data-pick="${CSS.escape(v.id)}"] .picker-thumb`);if(item)item.innerHTML=pickerThumb(v);});}
 function openPicker(i){activeSlot=i;$('#pickerSearch').value='';$('#pickerTitle').textContent=`Selecionar carro ${i+1}`;renderPicker('');$('#pickerBackdrop').hidden=false;requestAnimationFrame(()=>$('#pickerModal').classList.add('open'));$('#pickerModal').setAttribute('aria-hidden','false');setTimeout(()=>$('#pickerSearch').focus(),50);}
 function closePicker(){$('#pickerModal').classList.remove('open');$('#pickerModal').setAttribute('aria-hidden','true');setTimeout(()=>$('#pickerBackdrop').hidden=true,180);}
@@ -211,34 +198,7 @@ function openDrawer(id){const v=VEHICLES.find(x=>x.id===id);if(!v)return;const r
 function closeDrawer(){$('#specDrawer').classList.remove('open');$('#specDrawer').setAttribute('aria-hidden','true');setTimeout(()=>$('#drawerBackdrop').hidden=true,180);}
 async function fipeGet(path){const url=`${FIPE_API_BASE}${path}`;const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error(`FIPE ${r.status}`);return r.json();}
 function scoreFipeModel(name,v){const target=normalizeSearch(`${v.model} ${v.version}`);const words=target.split(/\s+/).filter(w=>w.length>2);const hay=normalizeSearch(name);let score=0;words.forEach(w=>{if(hay.includes(w))score+=w.length>4?2:1;});if(hay.includes(normalizeSearch(v.model)))score+=6;return score;}
-async function loadFipePrice(v){
-  if(!v||v.fipePriceLoading||v.fipePrice!==undefined)return;
-  v.fipePriceLoading=true;
-  const updatePriceEls=()=>{
-    document.querySelectorAll(`[data-fipe-price="${CSS.escape(v.id)}"]`).forEach(el=>{
-      if(v.fipePrice) el.innerHTML=`Preço de referência (FIPE) <b>${money(v.fipePrice)}</b><small>${esc(v.fipeMonth||'')}</small>`;
-      else if(v.fipePrice===null) el.textContent='Preço de referência (FIPE) · não localizado';
-      else el.textContent='Preço de referência (FIPE) · carregando…';
-    });
-  };
-  try{
-    const brands=await fipeGet('/brands');
-    const b=brands.find(x=>normalizeSearch(x.name).includes(normalizeSearch(v.brand))||normalizeSearch(v.brand).includes(normalizeSearch(x.name).split(' - ')[0]));
-    if(!b)throw new Error('marca');
-    const models=await fipeGet(`/brands/${b.code}/models`);
-    const candidates=models.map(m=>({m,score:scoreFipeModel(m.name,v)})).sort((a,b)=>b.score-a.score);
-    const best=candidates[0]; if(!best||best.score<5)throw new Error('modelo');
-    const years=await fipeGet(`/brands/${b.code}/models/${best.m.code}/years`);
-    const year=years.find(y=>String(y.code).startsWith('32000-')) || years[0];
-    if(!year)throw new Error('ano');
-    const detail=await fipeGet(`/brands/${b.code}/models/${best.m.code}/years/${year.code}`);
-    v.fipePrice=parseFipePrice(detail.price); v.fipeMonth=detail.referenceMonth||''; v.fipeModel=detail.model||best.m.name; v.fipeYear=detail.modelYear||null; v.fipeSource='FIPE API';
-  }catch(_){v.fipePrice=null;}finally{
-    v.fipePriceLoading=false;
-    updatePriceEls();
-    table();
-  }
-}
+async function loadFipePrice(v){if(!v||v.fipePriceLoading||v.fipePrice!==undefined)return;v.fipePriceLoading=true;const el=document.querySelector(`[data-fipe-price="${CSS.escape(v.id)}"]`);try{const brands=await fipeGet('/brands');const b=brands.find(x=>normalizeSearch(x.name).includes(normalizeSearch(v.brand))||normalizeSearch(v.brand).includes(normalizeSearch(x.name).split(' - ')[0]));if(!b)throw new Error('marca');const models=await fipeGet(`/brands/${b.code}/models`);const candidates=models.map(m=>({m,score:scoreFipeModel(m.name,v)})).sort((a,b)=>b.score-a.score);const best=candidates[0];if(!best||best.score<5)throw new Error('modelo');const years=await fipeGet(`/brands/${b.code}/models/${best.m.code}/years`);const year=years[0];if(!year)throw new Error('ano');const detail=await fipeGet(`/brands/${b.code}/models/${best.m.code}/years/${year.code}`);v.fipePrice=parseFipePrice(detail.price);v.fipeMonth=detail.referenceMonth||'';v.fipeModel=detail.model||best.m.name;v.fipeYear=detail.modelYear||null;v.fipeSource='FIPE API';if(el)el.innerHTML=v.fipePrice?`Preço de referência (FIPE) <b>${money(v.fipePrice)}</b><small>${esc(v.fipeMonth||'')}</small>`:'Preço de referência (FIPE) · não localizado';table();}catch(_){v.fipePrice=null;if(el)el.textContent='Preço de referência (FIPE) · não localizado';}finally{v.fipePriceLoading=false;}}
 function parseMoney(value){const s=String(value??'').trim();if(!s)return 0;return Number(s.replace(/\./g,'').replace(',','.'))||0;}
 function formatCentsInput(el){const digits=el.value.replace(/\D/g,'').slice(0,7);if(!digits){el.value='';return;}const cents=Math.max(1,parseInt(digits,10));el.value=(cents/100).toFixed(2).replace('.',',');}
 function initMoneyInputs(){document.querySelectorAll('.money-input').forEach(el=>{el.addEventListener('input',()=>{formatCentsInput(el);table();});el.addEventListener('focus',()=>{el.select();});el.addEventListener('blur',()=>{if(el.value)formatCentsInput(el);});});}
