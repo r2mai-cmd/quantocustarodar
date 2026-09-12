@@ -25,10 +25,9 @@ function mapPBEV(text){const rows=parseCSV(text);const h=rows.shift().map(x=>x.r
 function carName(v){return `${v.brand} ${v.model}`.trim();}
 function avg(a,b){return Number.isFinite(a)&&Number.isFinite(b)?a*.55+b*.45:(a??b);}
 function isElectric(v){return /el[eé]tr/i.test(v.type)||/el[eé]tr/i.test(v.fuel)||Number.isFinite(v.kwhPerKm)&&!Number.isFinite(v.gasCity);}
-function profile(){const km=num($('#kmMonth').value)||0,gas=parseMoney($('#gasPrice').value),eth=parseMoney($('#ethPrice').value),kwh=parseMoney($('#kwhPrice').value);return{km,gas,eth,kwh:$('#solar').checked?0:kwh,state:$('#state').value,annualKm:km*12};}
+function profile(){const km=num($('#kmMonth').value)||0,gas=parseMoney($('#gasPrice').value),eth=parseMoney($('#ethPrice').value),kwh=parseMoney($('#kwhPrice').value);return{km,gas,eth,kwh:$('#solar').checked?0:kwh,annualKm:km*12};}
 function energy(v,p){if(isElectric(v)&&Number.isFinite(v.kwhPerKm))return{costKm:v.kwhPerKm*p.kwh,kind:'eletricidade',detail:`${(v.kwhPerKm*100).toFixed(1).replace('.',',')} kWh/100 km`};const g=avg(v.gasCity,v.gasRoad),e=avg(v.ethCity,v.ethRoad),options=[];if(Number.isFinite(g)&&p.gas>0)options.push({kind:'gasolina',costKm:p.gas/g,detail:`${g.toFixed(1).replace('.',',')} km/l · gasolina`});if(Number.isFinite(e)&&p.eth>0)options.push({kind:'etanol',costKm:p.eth/e,detail:`${e.toFixed(1).replace('.',',')} km/l · etanol`});return options.length?options.sort((a,b)=>a.costKm-b.costKm)[0]:{kind:'combustível',costKm:null,detail:'Informe os preços de combustível'};}
-function ipvaNote(v,p){if(!p.state)return{annual:null,label:'Selecione o estado',source:'SEFAZ estadual'};if(p.state==='RS'&&isElectric(v))return{annual:0,label:'R$ 0 · isenção identificada no RS',source:'Receita Estadual RS'};if(p.state==='RS')return{annual:null,label:'Valor venal não integrado',source:'SEFAZ/RS'};return{annual:null,label:'Regra estadual ainda não integrada',source:'SEFAZ estadual'};}
-function calc(v,p){const e=energy(v,p),ip=ipvaNote(v,p),energyAnnual=Number.isFinite(e.costKm)?e.costKm*p.annualKm:null;return{e,ip,energyAnnual,annual:Number.isFinite(energyAnnual)&&Number.isFinite(ip.annual)?energyAnnual+ip.annual:null,costKm:e.costKm};}
+function calc(v,p){const e=energy(v,p),energyAnnual=Number.isFinite(e.costKm)?e.costKm*p.annualKm:null;return{e,energyAnnual,annual:null,costKm:e.costKm};}
 function photoMarkup(v, cls='car-photo'){
   const fallback=`<div class="car-placeholder" aria-hidden="true">🚗</div>`;
   if(!v?.imageUrl)return `<div class="${cls}">${fallback}</div>`;
@@ -139,7 +138,7 @@ function openAllSpecs(){
 $('#showAllSpecs').addEventListener('click',openAllSpecs);
 $('#pickerClose').addEventListener('click',closePicker);$('#pickerBackdrop').addEventListener('click',closePicker);$('#pickerSearch').addEventListener('input',e=>renderPicker(e.target.value));
 $('#drawerClose').addEventListener('click',closeDrawer);$('#drawerBackdrop').addEventListener('click',closeDrawer);document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePicker();closeDrawer();}});
-['#kmMonth','#state','#solar'].forEach(sel=>$(sel).addEventListener('input',()=>{if(sel==='#solar')$('#solarHint').textContent=$('#solar').checked?'custo considerado: R$ 0,00/kWh':'considera R$ 0,00/kWh';table();}));
+['#kmMonth','#solar'].forEach(sel=>$(sel).addEventListener('input',()=>{if(sel==='#solar')$('#solarHint').textContent=$('#solar').checked?'custo considerado: R$ 0,00/kWh':'considera R$ 0,00/kWh';table();}));
 
 async function load(){try{const r=await fetch(PBEV_CSV_URL,{cache:'no-store'});if(!r.ok)throw new Error('PBEV indisponível');VEHICLES=mapPBEV(await r.text());if(VEHICLES.length<100)throw new Error('base incompleta');$('#dataStatus').textContent=`${VEHICLES.length} registros carregados · PBEV 2026`;$('#dataStatus').classList.add('ok');renderAll();}catch(e){$('#dataStatus').textContent='Base PBEV indisponível no momento.';renderAll();}}
 initMoneyInputs();load();
